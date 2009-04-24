@@ -1,0 +1,35 @@
+void debug() {
+    while (!start_button())
+      {
+        choice = knob()/25;
+        switch (choice)
+          {
+            case 0: printf("Check all movement\n");
+              break;
+            case 1: printf("Test going straight\n");
+              break;
+            case 2: choice = 0;
+              break;
+          }
+        msleep(500L);
+    }
+    switch (choice) {
+        case 0:
+          Go(FOWARD); printf("Go(FOWARD)\n");
+          msleep(4000L);
+          Turn(LEFT);printf("Turn(LEFT)\n");
+          msleep(500L);
+          Go(REVERSE);printf("Go(REVERSE)\n");
+          msleep(500L);
+          Turn(RIGHT);printf("Turn(RIGHT)\n");
+          msleep(2000L);
+          Go(FOWARD);printf("Go(FOWARD)\n");
+          msleep(2000L);
+          Stop();printf("Stop()\n");
+          break;
+        case 1: Go(FOWARD); printf("Go(FOWARD)\n");
+        while (!stop_button());
+        Stop();
+        break;
+    }
+}
