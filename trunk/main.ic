@@ -1,0 +1,140 @@
+#use fencdr2.icb
+#use constants.ic
+#use basic_movement.ic
+#use debug.ic
+// from starting block, x is positive from east to west
+// y is positive from south to north
+// angle is 0 at north and positive ccw
+float x_loc = 0., y_loc = 0.;
+float angle = 0.;
+float loc_error = .1; // error of .1
+int command = 0;
+int choice;
+int l_motor = 0, r_motor = 2;
+int turn_speed = 50;
+int normal_speed = 100;
+int correction_speed = 80;
+
+// returns the absolute value of the passed float
+float fabs(float f)
+{
+    if (f < 0.) return -1.*f;
+    else return f;
+}
+
+// Gets and stores data from sensors
+void GetData()
+{
+    
+}    
+
+// Updates location and angle based on data from sensors
+void Update()
+{
+    
+}
+
+// Rotate a given degrees (+ is ccw, - is cw)
+void Rotate(float deg) 
+{
+    float new_angle = angle + deg;
+    if (deg > 0.)
+      {
+        motor(r_motor, turn_speed);
+        motor(l_motor, -1*turn_speed);
+        while (angle < new_angle)
+          {
+            Update();
+        }
+        motor(r_motor, 0);
+        motor(l_motor, 0);     
+    } else if (deg < 0.)
+      {
+        motor(r_motor, -1*turn_speed);
+        motor(l_motor, turn_speed);
+        while (angle > new_angle)
+          {
+            Update();
+        }
+        motor(r_motor, 0);
+        motor(l_motor, 0);     
+    }
+    
+}
+
+// Rotates to the absolute deg given (0 = north)
+// dir = 1 is facing foward. dir = -1 is reverse
+void RotateTo(float deg, int dir)
+{
+    float temp_angle;
+    float cutoff;
+    if (dir == -1) temp_angle = angle + 180.;
+    if (temp_angle > 360.) temp_angle -= 360.;
+    
+    cutoff = temp_angle + 180.;
+    if (cutoff > 360.) cutoff -= 360.;
+    if (deg > angle && deg < cutoff)
+      Rotate(deg - temp_angle);
+    else Rotate(360. - (deg - temp_angle));
+    
+    
+    
+}
+
+
+
+// Command to goto a certain point in a linear motion
+// dir = 1 is facing foward. dir = -1 is reverse
+void Goto(float x, float y, int dir)
+{
+    float x_diff = x - x_loc;
+    float y_diff = y - y_loc;
+    float radians = atan(y_diff/x_diff);
+    float deg = radians*180./PI;
+    if (x > x_loc) {
+        if (y > y_loc) { 
+            deg = radians*180./PI;
+        } else {
+            deg = radians*180./PI + 90.;
+        }
+    } else {
+        if (y > y_loc) { 
+            deg = radians*180./PI + 180.;
+        } else {
+            deg = radians*180./PI + 270.;
+        }
+    }
+    RotateTo(deg, dir);
+    motor(r_motor, normal_speed);
+    motor(l_motor, normal_speed);
+    while (fabs(x - x_loc) > loc_error && (fabs(y - y_loc) > loc_error))
+      {
+        Update(); 
+    }
+    motor(r_motor, 0);
+    motor(l_motor, 0);
+    
+}
+
+// List of commands to execute
+void Execute_Command()
+{
+    switch (command)
+      {
+        case 0:
+          break;
+        case 1:
+          break;
+        case 2:
+          break;
+    }
+}
+int main()
+{
+    
+    encoder2_counts = 0;
+    debug();
+    printf("Program Finished\n");
+
+
+}
