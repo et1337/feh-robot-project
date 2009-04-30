@@ -1,9 +1,27 @@
-#define PI 3.14159265
-#define L_MOTOR_SPEED 80
-#define R_MOTOR_SPEED 80
-#define L_MOTOR_TURN_SPEED 50
-#define R_MOTOR_TURN_SPEED 50
-#define LEFT 0
-#define RIGHT 1
-#define FOWARD 1
-#define REVERSE -1
+// Motors
+#define leftMotor 0
+#define rightMotor 2
+
+// Servos
+#define implementServo 0
+
+// Analog sensors
+#define leftEncoder 2
+#define rightEncoder 3
+#define startLightPort 4
+#define leftLinePort 16
+#define centerLinePort 18
+#define rightLinePort 20
+
+// Digital sensors
+#define frontLeftSwitch 8
+#define frontRightSwitch 9
+
+// Sensor constants
+#define ENCODER_THRESHOLD 9
+#define START_LIGHT_THRESHOLD 10
+#define LINE_THRESHOLD 10
+
+// Motor/servo constants
+#define IMPLEMENT_UP 0
+#define IMPLEMENT_DOWN 100
