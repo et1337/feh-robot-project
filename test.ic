@@ -1,40 +1,41 @@
 #use "exp_servo_lib.ic"
 #use "exp_servo_calibrate.ic"
 
-// Motors
-#define leftMotor 0
-#define rightMotor 2
+#use "fencdr2.icb"
+#use "fencdr3.icb"
 
-// Servos
-#define verticalServo 0
+#use "constants.ic"
 
-// Analog sensors
-#define leftEncoder 2
-#define rightEncoder 3
-#define startLightPort 4
-#define leftLinePort 16
-#define centerLinePort 17
-#define rightLinePort 18
+void setEncoder(int port, int ticks)
+{
+    if(port == 2)
+      encoder2_counts = ticks;
+    else if(port == 3)
+      encoder3_counts = ticks;
+}
 
-// Sensor constants
-#define ENCODER_THRESHOLD 9
-#define START_LIGHT_THRESHOLD 10
-#define LINE_THRESHOLD 10
+float inches(int ticks)
+{
+    return ((float)ticks / 24.0) * 6.283185307;
+}
+
+int ticks(int inches)
+{
+    return (int)(((float)inches / 6.283185307) * 24.0);
+}
+
+int getEncoder(int port)
+{
+    if(port == 2)
+      return encoder2_counts;
+    else if(port == 3)
+      return encoder3_counts;
+}
 
 void encoderCount(int port, int ticks)
 {
-    int count = 0;
-    int lastValue = analog(port);
-    int value = lastValue;
-    while(count < ticks)
-    {
-        value = analog(port);
-        if(value - lastValue > ENCODER_THRESHOLD || value - lastValue < -ENCODER_THRESHOLD)
-        {
-            count++;
-        }
-        lastValue = value;
-    }
+    setEncoder(port, 0);
+    while(getEncoder(port) < ticks);
 }
 
 void drive(int left, int right)
@@ -43,106 +44,134 @@ void drive(int left, int right)
     motor(rightMotor, right);
 }
 
-void driveLimit(int left, int right)
+void driveStraight(int distance)
 {
-    int lcount = 0;
-    int llastValue = analog(leftEncoder);
-    int lvalue = llastValue;
-    int rcount = 0;
-    int rlastValue = analog(rightEncoder);
-    int rvalue = rlastValue;
-    
-    while(lcount < left || rcount < right)
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(getEncoder(leftEncoder) < distance)
     {
-        lvalue = analog(leftEncoder);
-        rvalue = analog(rightEncoder);
-        if(lvalue - llastValue > ENCODER_THRESHOLD || lvalue - llastValue < -ENCODER_THRESHOLD)
-        {
-            lcount++;
-            if(lcount >= left)
-              motor(leftMotor, 0);
-        }
-        llastValue = lvalue;
-        if(rvalue - rlastValue > ENCODER_THRESHOLD || rvalue - rlastValue < -ENCODER_THRESHOLD)
-        {
-            rcount++;
-            if(rcount >= right)
-              motor(rightMotor, 0);
-        }
-        rlastValue = rvalue;
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(100, 50);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive(50, 100);
+        else
+          drive(100, 100);
+        sleep(0.1);
     }
 }
 
-void waitForLineEdge()
+void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
-    int value = analog(centerLinePort);
-    while(analog(centerLinePort) < value + LINE_THRESHOLD);
-    value = analog(centerLinePort);
-    while(analog(centerLinePort) > value - LINE_THRESHOLD);
+    int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
+    int center = (analog(centerLinePort) > centerLineFloorValue + LINE_THRESHOLD);
+    int right = (analog(centerLinePort) > rightLineFloorValue + LINE_THRESHOLD);
+    
+    if(center)
+    {
+        drive(100, 100);
+        if(right)
+        {
+            drive(100, 70);
+        }
+        else if(left)
+        {
+            drive(70, 100);
+        }
+    }
+    else if(left)
+    {
+        drive(0, 100);
+    }
+    else if(right)
+    {
+        drive(100, 0);
+    }
+    else
+      {
+        drive(100, 0);
+    }
+}
+
+void implement(int angle)
+{
+    exp_servo_deg(implementServo, angle);
 }
 
 int main()
 {
-    int startLightValue;
-    long startTime;
+    int startLightValue = 0;
+    int leftLineFloorValue;
+    int centerLineFloorValue;
+    int rightLineFloorValue;
     
     exp_servo_enable();
     
-    exp_servo_min[verticalServo] = 3588;
-    exp_servo_max[verticalServo] = 4490;
+    exp_servo_min[implementServo] = 2588;
+    exp_servo_max[implementServo] = 4078;
     
-    // Vertical servo is backwards: 180 is down.
-    exp_servo_deg(verticalServo, 180);
+    encoder2_low_threshold = 25;
+    encoder2_high_threshold = 45;
+    
+    encoder3_low_threshold = 25;
+    encoder3_high_threshold = 45;
+    
+    implement(IMPLEMENT_UP);
     
     while(!start_button());
     while(start_button());
+    
     startLightValue = analog(startLightPort);
+    leftLineFloorValue = analog(leftLinePort);
+    centerLineFloorValue = analog(centerLinePort);
+    rightLineFloorValue = analog(rightLinePort);
     
     // Wait for start light or start button.
     while(!(start_button() || analog(startLightPort) < startLightValue - START_LIGHT_THRESHOLD))
       printf("%d\n", analog(startLightPort));
     
     // Drive down the ramp
-    drive(100, 100);
-    encoderCount(leftEncoder, 150);
-    drive(0, 0);
+    driveStraight(ticks(21));
     
     // Turn toward dynamite dropbox
     drive(0, 100);
-    driveLimit(0, 90);
+    encoderCount(rightEncoder, ticks(8));
     
     // Drive toward dropbox
-    drive(100, 100);
-    encoderCount(leftEncoder, 40);
-    drive(0, 0);
+    driveStraight(ticks(24));
     
     // Turn toward plunger
     drive(0, 100);
-    driveLimit(0, 80);
+    encoderCount(rightEncoder, ticks(8));
     
     // Drive toward plunger
-    drive(100, 100);
-    encoderCount(leftEncoder, 60);
-    drive(0, 0);
+    driveStraight(ticks(9));
     
-    // Turn toward plunger
-    drive(0, 100);
-    driveLimit(0, 80);
-    
-    // Follow line backward up the debris ramp.
-    startTime = mseconds();
-    while(mseconds() < startTime + 2000L)
+    while(!digital(frontLeftSwitch) && !digital(frontRightSwitch))
     {
-        drive(0, -100);
-        waitForLineEdge();
-        drive(-100, 0);
-        waitForLineEdge();
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
-    drive(0, -100);
-    sleep(0.2);
+    
+    implement(IMPLEMENT_DOWN);
+    
+    sleep(1.0);
+    
+    implement(IMPLEMENT_UP);
     
     drive(-100, -100);
-    encoderCount(leftEncoder, 90);
+    encoderCount(leftEncoder, ticks(3));
+    
+    drive(0, -100);
+    encoderCount(rightEncoder, ticks(8));
+    
+    drive(100, 0);
+    encoderCount(leftEncoder, ticks(8));
+    
+    while(!digital(frontLeftSwitch) && !digital(frontRightSwitch))
+    {
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    
     drive(0, 0);
     
     exp_servo_disable();
