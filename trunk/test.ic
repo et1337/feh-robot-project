@@ -19,9 +19,9 @@ float inches(int ticks)
     return ((float)ticks / 24.0) * 6.283185307;
 }
 
-int ticks(int inches)
+int ticks(float inches)
 {
-    return (int)(((float)inches / 6.283185307) * 24.0);
+    return (int)((inches / 6.283185307) * 24.0);
 }
 
 int getEncoder(int port)
@@ -44,12 +44,28 @@ void drive(int left, int right)
     motor(rightMotor, right);
 }
 
-void driveStraight(int distance)
+void driveStraight(int distance, int direction)
+{
+    drive(100 * direction, 100 * direction);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(getEncoder(leftEncoder) < distance)
+    {
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(100 * direction, 50 * direction);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive(50 * direction, 100 * direction);
+        else
+          drive(100 * direction, 100 * direction);
+    }
+}
+
+void driveStraightWaitForLine(int floorValue)
 {
     drive(100, 100);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
-    while(getEncoder(leftEncoder) < distance)
+    while((analog(centerLinePort) < floorValue + LINE_THRESHOLD))
     {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100, 50);
@@ -57,10 +73,26 @@ void driveStraight(int distance)
           drive(50, 100);
         else
           drive(100, 100);
-        sleep(0.1);
     }
 }
 
+void driveStraightWaitForBump()
+{
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(!digital(frontLeftSwitch) || !digital(frontRightSwitch))
+    {
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(100, 50);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive(50, 100);
+        else
+          drive(100, 100);
+    }
+}
+
+int lineFollowState = LINE_FOLLOW_LEFT;
 void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
@@ -69,27 +101,37 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
     
     if(center)
     {
-        drive(100, 100);
         if(right)
         {
-            drive(100, 70);
+            drive(100, 50);
+            lineFollowState = LINE_FOLLOW_RIGHT;
         }
         else if(left)
         {
-            drive(70, 100);
+            drive(50, 100);
+            lineFollowState = LINE_FOLLOW_LEFT;
+        }
+        else
+        {
+            drive(100, 100);
         }
     }
     else if(left)
     {
         drive(0, 100);
+        lineFollowState = LINE_FOLLOW_LEFT;
     }
     else if(right)
     {
         drive(100, 0);
+        lineFollowState = LINE_FOLLOW_RIGHT;
     }
     else
-      {
-        drive(100, 0);
+    {
+        if(lineFollowState == LINE_FOLLOW_RIGHT)
+          drive(100, 0);
+        else if(lineFollowState == LINE_FOLLOW_LEFT)
+          drive(0, 100);
     }
 }
 
@@ -104,6 +146,7 @@ int main()
     int leftLineFloorValue;
     int centerLineFloorValue;
     int rightLineFloorValue;
+    long startTime = 0L;
     
     exp_servo_enable();
     
@@ -112,7 +155,7 @@ int main()
     
     encoder2_low_threshold = 25;
     encoder2_high_threshold = 45;
-    
+
     encoder3_low_threshold = 25;
     encoder3_high_threshold = 45;
     
@@ -131,47 +174,59 @@ int main()
       printf("%d\n", analog(startLightPort));
     
     // Drive down the ramp
-    driveStraight(ticks(21));
+    driveStraight(ticks(21.0), FORWARD);
     
     // Turn toward dynamite dropbox
     drive(0, 100);
-    encoderCount(rightEncoder, ticks(8));
+    encoderCount(rightEncoder, ticks(6.0));
     
     // Drive toward dropbox
-    driveStraight(ticks(24));
+    driveStraight(ticks(24.0), FORWARD);
     
     // Turn toward plunger
     drive(0, 100);
-    encoderCount(rightEncoder, ticks(8));
+    encoderCount(rightEncoder, ticks(5.0));
     
-    // Drive toward plunger
-    driveStraight(ticks(9));
+    // Drive toward plunger until we hit the line
+    driveStraightWaitForLine(centerLineFloorValue);
     
+    lineFollowState = LINE_FOLLOW_LEFT;
+    // Follow the line until we bump into the plunger
     while(!digital(frontLeftSwitch) && !digital(frontRightSwitch))
     {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
+    // Lower and raise the implement
     implement(IMPLEMENT_DOWN);
-    
     sleep(1.0);
-    
     implement(IMPLEMENT_UP);
     
-    drive(-100, -100);
-    encoderCount(leftEncoder, ticks(3));
+    // Back up a little
+    driveStraight(ticks(2.0), BACKWARD);
     
+    // Turn backwards and to the right; we're trying to turn 180 around and follow the line
     drive(0, -100);
-    encoderCount(rightEncoder, ticks(8));
+    encoderCount(rightEncoder, ticks(11.0));
     
+    // Back up so we hit the line eventually
+    driveStraight(ticks(3.0), BACKWARD);
+    
+    // Turn right to face along the line
     drive(100, 0);
-    encoderCount(leftEncoder, ticks(8));
+    encoderCount(leftEncoder, ticks(10.0));
     
-    while(!digital(frontLeftSwitch) && !digital(frontRightSwitch))
+    lineFollowState = LINE_FOLLOW_RIGHT;
+    startTime = mseconds();
+    // Follow the line up the ramp until we hit the gem
+    while(mseconds() < startTime + 2000L)
     {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
+    driveStraightWaitForBump();
+    
+    // Stop
     drive(0, 0);
     
     exp_servo_disable();
