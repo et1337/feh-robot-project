@@ -18,13 +18,16 @@
 #define frontRightSwitch 9
 
 // Sensor constants
-#define ENCODER_THRESHOLD 9
 #define START_LIGHT_THRESHOLD 10
-#define LINE_THRESHOLD 10
+#define LINE_THRESHOLD 20
 
 // Direction constants
 #define BACKWARD -1
 #define FORWARD 1
+#define FORWARD_RIGHT 0
+#define FORWARD_LEFT 1
+#define BACKWARD_RIGHT 2
+#define BACKWARD_LEFT 3
 #define LINE_FOLLOW_LEFT 0
 #define LINE_FOLLOW_RIGHT 1
 

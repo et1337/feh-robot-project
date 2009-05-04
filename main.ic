@@ -135,6 +135,6 @@ int main()
     encoder2_counts = 0;
     debug();
     printf("Program Finished\n");
-
-
+    
+    
 }

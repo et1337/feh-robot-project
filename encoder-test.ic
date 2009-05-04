@@ -50,13 +50,13 @@ void driveStraight(int distance, int direction)
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(getEncoder(leftEncoder) < distance)
-    {
+      {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100 * direction, 50 * direction);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
           drive(50 * direction, 100 * direction);
         else
-          drive(100 * direction, 100 * direction);
+        drive(100 * direction, 100 * direction);
         printf("L:%d R:%d\n", getEncoder(leftEncoder), getEncoder(rightEncoder));
     }
 }
@@ -67,13 +67,13 @@ void driveStraightWaitForLine(int floorValue)
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while((analog(centerLinePort) < floorValue + LINE_THRESHOLD))
-    {
+      {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100, 50);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
           drive(50, 100);
         else
-          drive(100, 100);
+        drive(100, 100);
     }
 }
 
@@ -83,13 +83,13 @@ void driveStraightWaitForBump()
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(!digital(frontLeftSwitch) && !digital(frontRightSwitch))
-    {
+      {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100, 50);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
           drive(50, 100);
         else
-          drive(100, 100);
+        drive(100, 100);
     }
 }
 
@@ -101,14 +101,14 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
     int right = (analog(centerLinePort) > rightLineFloorValue + LINE_THRESHOLD);
     
     if(center)
-    {
+      {
         if(right)
-        {
+          {
             drive(100, 50);
             lineFollowState = LINE_FOLLOW_RIGHT;
         }
         else if(left)
-        {
+          {
             drive(50, 100);
             lineFollowState = LINE_FOLLOW_LEFT;
         }
@@ -118,17 +118,17 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
         }
     }
     else if(left)
-    {
+      {
         drive(0, 100);
         lineFollowState = LINE_FOLLOW_LEFT;
     }
     else if(right)
-    {
+      {
         drive(100, 0);
         lineFollowState = LINE_FOLLOW_RIGHT;
     }
     else
-    {
+      {
         if(lineFollowState == LINE_FOLLOW_RIGHT)
           drive(100, 0);
         else if(lineFollowState == LINE_FOLLOW_LEFT)
@@ -155,10 +155,10 @@ int main()
     exp_servo_max[implementServo] = 4078;
     
     encoder2_low_threshold = 25;
-    encoder2_high_threshold = 45;
-
+    encoder2_high_threshold = 30;
+    
     encoder3_low_threshold = 25;
-    encoder3_high_threshold = 45;
+    encoder3_high_threshold = 30;
     
     implement(IMPLEMENT_UP);
     

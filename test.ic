@@ -44,20 +44,44 @@ void drive(int left, int right)
     motor(rightMotor, right);
 }
 
+void turn(int ticks, int direction)
+{
+    switch(direction)
+    {
+        case FORWARD_RIGHT:
+          drive(100, 0);
+          encoderCount(leftEncoder, ticks);
+        break;
+        case FORWARD_LEFT:
+          drive(0, 100);
+          encoderCount(rightEncoder, ticks);
+        break;
+        case BACKWARD_RIGHT:
+          drive(0, -100);
+          encoderCount(rightEncoder, ticks);
+        break;
+        case BACKWARD_LEFT:
+          drive(-100, 0);
+          encoderCount(leftEncoder, ticks);
+        break;
+    }
+}
+
 void driveStraight(int distance, int direction)
 {
     drive(100 * direction, 100 * direction);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(getEncoder(leftEncoder) < distance)
-    {
+      {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100 * direction, 50 * direction);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
           drive(50 * direction, 100 * direction);
         else
-          drive(100 * direction, 100 * direction);
+        drive(100 * direction, 100 * direction);
     }
+    drive(0, 0);
 }
 
 void driveStraightWaitForLine(int floorValue)
@@ -66,14 +90,15 @@ void driveStraightWaitForLine(int floorValue)
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while((analog(centerLinePort) < floorValue + LINE_THRESHOLD))
-    {
+      {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100, 50);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
           drive(50, 100);
         else
-          drive(100, 100);
+        drive(100, 100);
     }
+    drive(0, 0);
 }
 
 void driveStraightWaitForBump()
@@ -81,15 +106,16 @@ void driveStraightWaitForBump()
     drive(100, 100);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
-    while(!digital(frontLeftSwitch) || !digital(frontRightSwitch))
-    {
+    while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
+      {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
           drive(100, 50);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
           drive(50, 100);
         else
-          drive(100, 100);
+        drive(100, 100);
     }
+    drive(0, 0);
 }
 
 int lineFollowState = LINE_FOLLOW_LEFT;
@@ -100,14 +126,14 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
     int right = (analog(centerLinePort) > rightLineFloorValue + LINE_THRESHOLD);
     
     if(center)
-    {
+      {
         if(right)
-        {
+          {
             drive(100, 50);
             lineFollowState = LINE_FOLLOW_RIGHT;
         }
         else if(left)
-        {
+          {
             drive(50, 100);
             lineFollowState = LINE_FOLLOW_LEFT;
         }
@@ -117,17 +143,17 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
         }
     }
     else if(left)
-    {
+      {
         drive(0, 100);
         lineFollowState = LINE_FOLLOW_LEFT;
     }
     else if(right)
-    {
+      {
         drive(100, 0);
         lineFollowState = LINE_FOLLOW_RIGHT;
     }
     else
-    {
+      {
         if(lineFollowState == LINE_FOLLOW_RIGHT)
           drive(100, 0);
         else if(lineFollowState == LINE_FOLLOW_LEFT)
@@ -154,15 +180,12 @@ int main()
     exp_servo_max[implementServo] = 4078;
     
     encoder2_low_threshold = 25;
-    encoder2_high_threshold = 45;
-
+    encoder2_high_threshold = 30;
+    
     encoder3_low_threshold = 25;
-    encoder3_high_threshold = 45;
+    encoder3_high_threshold = 30;
     
     implement(IMPLEMENT_UP);
-    
-    while(!start_button());
-    while(start_button());
     
     startLightValue = analog(startLightPort);
     leftLineFloorValue = analog(leftLinePort);
@@ -174,47 +197,58 @@ int main()
       printf("%d\n", analog(startLightPort));
     
     // Drive down the ramp
-    driveStraight(ticks(21.0), FORWARD);
+    driveStraight(ticks(22.0), FORWARD);
     
     // Turn toward dynamite dropbox
-    drive(0, 100);
-    encoderCount(rightEncoder, ticks(6.0));
+    turn(ticks(7.6), FORWARD_LEFT);
     
     // Drive toward dropbox
-    driveStraight(ticks(24.0), FORWARD);
+    driveStraight(ticks(19.0), FORWARD);
+
+    // Drop dynamite
+    implement(IMPLEMENT_DOWN);
+    sleep(1.0);
+    implement(IMPLEMENT_UP);
+    
+    // Back up a little
+    driveStraight(ticks(7.0), BACKWARD);
     
     // Turn toward plunger
-    drive(0, 100);
-    encoderCount(rightEncoder, ticks(5.0));
+    turn(ticks(4.0), FORWARD_LEFT);
     
-    // Drive toward plunger until we hit the line
+    // Drive toward plunger
+    driveStraight(ticks(14.0), FORWARD);
+    
+    // Turn toward plunger to help the line-following routine
+    turn(ticks(8.0), FORWARD_LEFT);
+    
+    // Drive toward plunger until we hit the second line
     driveStraightWaitForLine(centerLineFloorValue);
     
     lineFollowState = LINE_FOLLOW_LEFT;
     // Follow the line until we bump into the plunger
-    while(!digital(frontLeftSwitch) && !digital(frontRightSwitch))
+    while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
     {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
+    drive(0, 0);
     
     // Lower and raise the implement
     implement(IMPLEMENT_DOWN);
     sleep(1.0);
     implement(IMPLEMENT_UP);
     
-    // Back up a little
-    driveStraight(ticks(2.0), BACKWARD);
+    // Wait for debris ramp to fall
+    sleep(1.0);
     
     // Turn backwards and to the right; we're trying to turn 180 around and follow the line
-    drive(0, -100);
-    encoderCount(rightEncoder, ticks(11.0));
+    turn(ticks(22.0), BACKWARD_RIGHT);
     
-    // Back up so we hit the line eventually
-    driveStraight(ticks(3.0), BACKWARD);
+    driveStraight(ticks(4.0), FORWARD);
     
-    // Turn right to face along the line
-    drive(100, 0);
-    encoderCount(leftEncoder, ticks(10.0));
+    turn(ticks(4.0), FORWARD_RIGHT);
+    
+    driveStraightWaitForLine(centerLineFloorValue);
     
     lineFollowState = LINE_FOLLOW_RIGHT;
     startTime = mseconds();
