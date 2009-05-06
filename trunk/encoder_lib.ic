@@ -1,0 +1,42 @@
+// encoder_lib.ic - Encoder Function Library
+#use "fencdr2.icb"
+#use "fencdr3.icb"
+
+void initEncoders()
+{
+    encoder2_low_threshold = 25;
+    encoder2_high_threshold = 30;
+    
+    encoder3_low_threshold = 25;
+    encoder3_high_threshold = 30;   
+}
+void setEncoder(int port, int ticks)
+{
+    if(port == 2)
+      encoder2_counts = ticks;
+    else if(port == 3)
+      encoder3_counts = ticks;
+}
+
+float inches(int ticks)
+{
+    return ((float)ticks / 24.0) * 6.283185307;
+}
+
+int ticks(float inches)
+{
+    return (int)((inches / 6.283185307) * 24.0);
+}
+
+int getEncoder(int port)
+{
+    if(port == 2)
+      return encoder2_counts;
+    else if(port == 3)
+      return encoder3_counts;
+}
+void encoderCount(int port, int ticks)
+{
+    setEncoder(port, 0);
+    while(getEncoder(port) < ticks);
+}

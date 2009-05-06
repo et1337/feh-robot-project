@@ -1,0 +1,88 @@
+#include "constants.ic"
+#include "encoder_lib.ic"
+#include "movement_lib.ic"
+#include "implement_lib.ic"
+void WaitForStartLight(int startLightValue)
+{
+    while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD);
+}
+void DropOffDynamite()
+{
+    // Drive down the ramp
+    driveStraight(ticks(22.0), FORWARD);
+    
+    // Turn toward dynamite dropbox
+    turn(ticks(7.6), FORWARD_LEFT);
+    
+    // Drive toward dropbox
+    driveStraight(ticks(19.0), FORWARD);
+    
+    // Drop dynamite
+    implement(IMPLEMENT_DOWN);
+    sleep(1.0);
+    implement(IMPLEMENT_UP);
+}
+
+void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+{
+    // Back up a little
+    driveStraight(ticks(7.0), BACKWARD);
+    
+    // Turn toward plunger
+    turn(ticks(3.5), FORWARD_LEFT);
+    
+    // Drive toward plunger
+    driveStraight(ticks(15.0), FORWARD);
+    
+    // Turn toward plunger to help the line-following routine
+    turn(ticks(8.0), FORWARD_LEFT);
+    
+    leftLineFloorValue = analog(leftLinePort);
+    centerLineFloorValue = analog(centerLinePort);
+    rightLineFloorValue = analog(rightLinePort);
+    
+    // Drive toward plunger until we hit the second line
+    driveStraightWaitForLine(centerLineFloorValue);
+    
+    lineFollowState = LINE_FOLLOW_LEFT;
+    // Follow the line until we bump into the plunger
+    while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
+      {
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    drive(0, 0);
+    
+    // Lower and raise the implement
+    implement(IMPLEMENT_DOWN);
+    sleep(1.0);
+    implement(IMPLEMENT_UP);
+}
+
+void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+{
+    // Turn backwards and to the right; we're trying to turn 180 around and follow the line
+    turn(ticks(22.0), BACKWARD_RIGHT);
+    
+    driveStraight(ticks(4.0), FORWARD);
+    
+    turn(ticks(4.0), FORWARD_RIGHT);
+    
+    leftLineFloorValue = analog(leftLinePort);
+    centerLineFloorValue = analog(centerLinePort);
+    rightLineFloorValue = analog(rightLinePort);
+    driveStraightWaitForLine(centerLineFloorValue);
+    
+    lineFollowState = LINE_FOLLOW_RIGHT;
+    
+    
+    // Follow the line up the ramp until we hit the gem
+    while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
+      {
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    
+    //driveStraightWaitForBump();
+    
+    // Stop
+    drive(0, 0);
+}

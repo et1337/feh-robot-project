@@ -1,0 +1,125 @@
+#use "constants.ic"
+#use "encoder_lib.ic"
+void drive(int left, int right)
+{
+    motor(leftMotor, left);
+    motor(rightMotor, right);
+}
+
+void turn(int ticks, int direction)
+{
+    switch(direction)
+      {
+        case FORWARD_RIGHT:
+          drive(100, 0);
+        encoderCount(leftEncoder, ticks);
+        break;
+        case FORWARD_LEFT:
+          drive(0, 100);
+        encoderCount(rightEncoder, ticks);
+        break;
+        case BACKWARD_RIGHT:
+          drive(0, -100);
+        encoderCount(rightEncoder, ticks);
+        break;
+        case BACKWARD_LEFT:
+          drive(-100, 0);
+        encoderCount(leftEncoder, ticks);
+        break;
+    }
+    drive(0, 0);
+}
+
+void driveStraight(int distance, int direction)
+{
+    drive(100 * direction, 100 * direction);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(getEncoder(leftEncoder) < distance)
+      {
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(100 * direction, 50 * direction);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive(50 * direction, 100 * direction);
+        else
+        drive(100 * direction, 100 * direction);
+    }
+    drive(0, 0);
+}
+
+void driveStraightWaitForLine(int floorValue)
+{
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while((analog(centerLinePort) < floorValue + LINE_THRESHOLD))
+      {
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(100, 50);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive(50, 100);
+        else
+        drive(100, 100);
+    }
+    drive(0, 0);
+}
+
+void driveStraightWaitForBump()
+{
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
+      {
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(100, 50);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive(50, 100);
+        else
+        drive(100, 100);
+    }
+    drive(0, 0);
+}
+
+int lineFollowState = LINE_FOLLOW_LEFT;
+void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+{
+    int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
+    int center = (analog(centerLinePort) > centerLineFloorValue + LINE_THRESHOLD);
+    int right = (analog(centerLinePort) > rightLineFloorValue + LINE_THRESHOLD);
+    
+    if(center)
+      {
+        if(right)
+          {
+            drive(100, 60);
+            lineFollowState = LINE_FOLLOW_RIGHT;
+        }
+        else if(left)
+          {
+            drive(60, 100);
+            lineFollowState = LINE_FOLLOW_LEFT;
+        }
+        else
+        {
+            drive(100, 100);
+        }
+    }
+    else if(left)
+      {
+        drive(0, 100);
+        lineFollowState = LINE_FOLLOW_LEFT;
+    }
+    else if(right)
+      {
+        drive(100, 0);
+        lineFollowState = LINE_FOLLOW_RIGHT;
+    }
+    else
+      {
+        if(lineFollowState == LINE_FOLLOW_RIGHT)
+          drive(100, 0);
+        else if(lineFollowState == LINE_FOLLOW_LEFT)
+          drive(0, 100);
+    }
+}
