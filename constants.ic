@@ -19,7 +19,7 @@
 
 // Sensor constants
 #define START_LIGHT_THRESHOLD 10
-#define LINE_THRESHOLD 20
+#define LINE_THRESHOLD 10
 
 // Direction constants
 #define BACKWARD -1

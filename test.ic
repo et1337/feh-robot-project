@@ -65,6 +65,7 @@ void turn(int ticks, int direction)
           encoderCount(leftEncoder, ticks);
         break;
     }
+    drive(0, 0);
 }
 
 void driveStraight(int distance, int direction)
@@ -129,12 +130,12 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
       {
         if(right)
           {
-            drive(100, 50);
+            drive(100, 60);
             lineFollowState = LINE_FOLLOW_RIGHT;
         }
         else if(left)
           {
-            drive(50, 100);
+            drive(60, 100);
             lineFollowState = LINE_FOLLOW_LEFT;
         }
         else
@@ -166,6 +167,87 @@ void implement(int angle)
     exp_servo_deg(implementServo, angle);
 }
 
+void DropOffDynamite()
+{
+    // Drive down the ramp
+    driveStraight(ticks(22.0), FORWARD);
+    
+    // Turn toward dynamite dropbox
+    turn(ticks(7.6), FORWARD_LEFT);
+    
+    // Drive toward dropbox
+    driveStraight(ticks(19.0), FORWARD);
+    
+    // Drop dynamite
+    implement(IMPLEMENT_DOWN);
+    sleep(1.0);
+    implement(IMPLEMENT_UP);
+}
+
+void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+{
+    // Back up a little
+    driveStraight(ticks(7.0), BACKWARD);
+    
+    // Turn toward plunger
+    turn(ticks(3.5), FORWARD_LEFT);
+    
+    // Drive toward plunger
+    driveStraight(ticks(15.0), FORWARD);
+    
+    // Turn toward plunger to help the line-following routine
+    turn(ticks(8.0), FORWARD_LEFT);
+    
+    leftLineFloorValue = analog(leftLinePort);
+    centerLineFloorValue = analog(centerLinePort);
+    rightLineFloorValue = analog(rightLinePort);
+    
+    // Drive toward plunger until we hit the second line
+    driveStraightWaitForLine(centerLineFloorValue);
+    
+    lineFollowState = LINE_FOLLOW_LEFT;
+    // Follow the line until we bump into the plunger
+    while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
+    {
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    drive(0, 0);
+    
+    // Lower and raise the implement
+    implement(IMPLEMENT_DOWN);
+    sleep(1.0);
+    implement(IMPLEMENT_UP);
+}
+
+void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+{
+    // Turn backwards and to the right; we're trying to turn 180 around and follow the line
+    turn(ticks(22.0), BACKWARD_RIGHT);
+    
+    driveStraight(ticks(4.0), FORWARD);
+    
+    turn(ticks(4.0), FORWARD_RIGHT);
+    
+    leftLineFloorValue = analog(leftLinePort);
+    centerLineFloorValue = analog(centerLinePort);
+    rightLineFloorValue = analog(rightLinePort);
+    driveStraightWaitForLine(centerLineFloorValue);
+    
+    lineFollowState = LINE_FOLLOW_RIGHT;
+
+    
+    // Follow the line up the ramp until we hit the gem
+    while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
+    {
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    
+    //driveStraightWaitForBump();
+    
+    // Stop
+    drive(0, 0);
+}
+
 int main()
 {
     int startLightValue = 0;
@@ -188,80 +270,61 @@ int main()
     implement(IMPLEMENT_UP);
     
     startLightValue = analog(startLightPort);
+
+    
+    // Wait for start light or start button.
+    while(!start_button())
+    {
+        sleep(0.1);
+        if(knob() < 64)
+        {
+            printf("1 Plunger only\n");
+        }
+        else if(knob() < 128)
+        {
+            printf("2 Plunger and gem\n");
+        }
+        else if(knob() < 192)
+        {
+            printf("3 Gem only\n");
+        }
+        else
+        {
+            printf("4 Full routine\n");
+            if(analog(startLightPort) < startLightValue - START_LIGHT_THRESHOLD)
+              break;
+        }
+    }
     leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
     rightLineFloorValue = analog(rightLinePort);
-    
-    // Wait for start light or start button.
-    while(!(start_button() || analog(startLightPort) < startLightValue - START_LIGHT_THRESHOLD))
-      printf("%d\n", analog(startLightPort));
-    
-    // Drive down the ramp
-    driveStraight(ticks(22.0), FORWARD);
-    
-    // Turn toward dynamite dropbox
-    turn(ticks(7.6), FORWARD_LEFT);
-    
-    // Drive toward dropbox
-    driveStraight(ticks(19.0), FORWARD);
+    if(knob() < 64)
+    {
+        // Just do plunger
+        DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    else if(knob() < 128)
+    {
+        // Do plunger and gem
+        DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        // Wait for debris ramp to fall
+        sleep(1.0);
+        GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    else if(knob() < 192)
+    {
+        // Just do gem
+        GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
+    else
+    {
+        // Full routine
+        DropOffDynamite();
+        DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        // Wait for debris ramp to fall
+        sleep(1.0);
+        GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
 
-    // Drop dynamite
-    implement(IMPLEMENT_DOWN);
-    sleep(1.0);
-    implement(IMPLEMENT_UP);
-    
-    // Back up a little
-    driveStraight(ticks(7.0), BACKWARD);
-    
-    // Turn toward plunger
-    turn(ticks(4.0), FORWARD_LEFT);
-    
-    // Drive toward plunger
-    driveStraight(ticks(14.0), FORWARD);
-    
-    // Turn toward plunger to help the line-following routine
-    turn(ticks(8.0), FORWARD_LEFT);
-    
-    // Drive toward plunger until we hit the second line
-    driveStraightWaitForLine(centerLineFloorValue);
-    
-    lineFollowState = LINE_FOLLOW_LEFT;
-    // Follow the line until we bump into the plunger
-    while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
-    {
-        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-    }
-    drive(0, 0);
-    
-    // Lower and raise the implement
-    implement(IMPLEMENT_DOWN);
-    sleep(1.0);
-    implement(IMPLEMENT_UP);
-    
-    // Wait for debris ramp to fall
-    sleep(1.0);
-    
-    // Turn backwards and to the right; we're trying to turn 180 around and follow the line
-    turn(ticks(22.0), BACKWARD_RIGHT);
-    
-    driveStraight(ticks(4.0), FORWARD);
-    
-    turn(ticks(4.0), FORWARD_RIGHT);
-    
-    driveStraightWaitForLine(centerLineFloorValue);
-    
-    lineFollowState = LINE_FOLLOW_RIGHT;
-    startTime = mseconds();
-    // Follow the line up the ramp until we hit the gem
-    while(mseconds() < startTime + 2000L)
-    {
-        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-    }
-    
-    driveStraightWaitForBump();
-    
-    // Stop
-    drive(0, 0);
-    
     exp_servo_disable();
 }
