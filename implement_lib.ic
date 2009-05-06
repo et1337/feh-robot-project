@@ -1,0 +1,14 @@
+#use "exp_servo_lib.ic"
+#use "exp_servo_calibrate.ic"
+#include "constants.ic"
+void initServo(int port)
+{
+    exp_servo_enable();
+    
+    exp_servo_min[port] = 2588;
+    exp_servo_max[port] = 4078;
+}
+void implement(int angle)
+{
+    exp_servo_deg(implementServo, angle);
+}
