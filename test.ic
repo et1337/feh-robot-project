@@ -3,6 +3,7 @@
 #use "movement_lib.ic"
 #use "implement_lib.ic"
 #use "general_lib.ic"
+#use "gps_lib.ic"
 
 int main()
 {
@@ -15,7 +16,6 @@ int main()
     initServo(implementServo);
     initEncoders(); 
 
-    
     implement(IMPLEMENT_UP);
     
     startLightValue = analog(startLightPort);
@@ -23,31 +23,44 @@ int main()
     centerLineFloorValue = analog(centerLinePort);
     rightLineFloorValue = analog(rightLinePort);
     
+    initGPS();
     
     // Wait for start light or start button.
-    while(!start_button())
-      {
+    while(!stop_button())
+    {
         sleep(0.1);
         knobValue = knob() /23; // value of 0 to 10
         switch (knobValue)
-          {
+        {
             case 0: printf("0: From Start\n"); break;
             case 1: printf("1: Depress Plunger\n"); break;
             case 2: printf("2: Get Gem\n"); break;
-            default: printf("Default: Full routine\n"); knobValue = 0; break;
+            default: printf("%d: Invalid command\n", knobValue); break;
         }
     }
+    while(stop_button());
     switch (knobValue)
-      {
+    {
         case 0: // Everything
           WaitForStartLight(startLightValue);
           DropOffDynamite();
-        case 1: // Press plunger
           DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-        case 2:
           sleep(1.0);
+          GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);  
+          break;
+        case 1: // Press plunger, get gem
+          DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+          sleep(1.0); // Wait for ramp
           GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);   
+          break;
+        case 2: // Get gem
+          GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);   
+          break;
     }
     
-    exp_servo_disable();
+    sleep(3.0); // Let servos finish moving before disabling
+    
+    disableServo();
+    
+    disableGPS();
 }

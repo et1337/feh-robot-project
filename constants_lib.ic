@@ -33,4 +33,4 @@
 
 // Motor/servo constants
 #define IMPLEMENT_UP 0
-#define IMPLEMENT_DOWN 120
+#define IMPLEMENT_DOWN 180

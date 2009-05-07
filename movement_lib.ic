@@ -1,5 +1,7 @@
-#use "constants.ic"
+#use "constants_lib.ic"
 #use "encoder_lib.ic"
+#use "gps_lib.ic"
+
 void drive(int left, int right)
 {
     motor(leftMotor, left);
