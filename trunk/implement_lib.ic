@@ -1,6 +1,6 @@
 #use "exp_servo_lib.ic"
 #use "exp_servo_calibrate.ic"
-#include "constants.ic"
+#include "constants_lib.ic"
 void initServo(int port)
 {
     exp_servo_enable();
@@ -11,4 +11,8 @@ void initServo(int port)
 void implement(int angle)
 {
     exp_servo_deg(implementServo, angle);
+}
+void disableServo()
+{
+    exp_servo_disable();
 }

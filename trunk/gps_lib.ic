@@ -1,0 +1,45 @@
+#use gps_module.icb
+#use gps_module.ic
+
+void initGPS()
+{
+    int region = 'a';
+    while(!stop_button())
+    {
+        sleep(0.1);
+        region = 97 + (knob() / 43);
+        switch(region)
+        {
+            case 'a':
+              printf("Region A\n");
+            break;
+            case 'b':
+              printf("Region B\n");
+            break;
+            case 'c':
+              printf("Region C\n");
+            break;
+            case 'd':
+              printf("Region D\n");
+            break;
+            case 'e':
+              printf("Region E\n");
+            break;
+            case 'f':
+              printf("Region F\n");
+            break;
+            case 'g':
+              printf("Region G\n");
+            break;
+            case 'h':
+              printf("Region H\n");
+            break;
+        }
+    }
+    gps_initialize(region);
+    gps_enable();
+}
+void disableGPS()
+{
+    gps_disable();
+}

@@ -1,10 +1,11 @@
-#include "constants.ic"
+#include "constants_lib.ic"
 #include "encoder_lib.ic"
 #include "movement_lib.ic"
 #include "implement_lib.ic"
+
 void WaitForStartLight(int startLightValue)
 {
-    while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD);
+    while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD && !stop_button());
 }
 void DropOffDynamite()
 {
@@ -19,20 +20,21 @@ void DropOffDynamite()
     
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
-    sleep(1.0);
+    sleep(2.0);
     implement(IMPLEMENT_UP);
+    sleep(1.0);
 }
 
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     // Back up a little
-    driveStraight(ticks(7.0), BACKWARD);
+    driveStraight(ticks(9.0), BACKWARD);
     
     // Turn toward plunger
-    turn(ticks(3.5), FORWARD_LEFT);
+    turn(ticks(5.0), FORWARD_LEFT);
     
     // Drive toward plunger
-    driveStraight(ticks(15.0), FORWARD);
+    driveStraight(ticks(20.0), FORWARD);
     
     // Turn toward plunger to help the line-following routine
     turn(ticks(8.0), FORWARD_LEFT);
@@ -47,7 +49,7 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
     lineFollowState = LINE_FOLLOW_LEFT;
     // Follow the line until we bump into the plunger
     while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
-      {
+    {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     drive(0, 0);
