@@ -2,7 +2,7 @@ int main()
 {
     while(1)
       {
-        printf("%d %d %d\n", analog(2), analog(3), analog(4));
+        printf("%d %d %d\n", analog(16), analog(18), analog(20));
         msleep(100L);
     }
 }

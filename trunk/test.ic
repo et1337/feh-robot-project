@@ -37,6 +37,7 @@ int main()
             case 2: printf("2: Get Gem\n"); break;
             case 3: printf("3: GPS test\n"); break;
             case 4: printf("4: Servo test\n"); break;
+            case 5: printf("5: Gem servo test\n"); break;
             default: printf("%d: Invalid command\n", knobValue); break;
         }
     }
@@ -74,6 +75,17 @@ int main()
             implement((int)((((float)knob()) / 255.0) * 180.0));
             printf("Servo: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
         }
+        break;
+        case 5: // Gem servo test
+          implement(IMPLEMENT_GEM);
+          sleep(1.0);
+          while(!gps_get_data());
+          while(gps_y < 240)
+          {
+            while(!gps_get_data());
+            drive(100, 100);
+        }
+        drive(0, 0);
         break;
     }
     

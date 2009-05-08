@@ -11,23 +11,23 @@ void drive(int left, int right)
 void turn(int angle, int direction)
 {
     switch(direction)
-    {
+      {
         case FORWARD_RIGHT:
           drive(100, 0);
-          waitForGpsHeading(angle);
-          break;
+        waitForGpsHeading(angle);
+        break;
         case FORWARD_LEFT:
           drive(0, 100);
-          waitForGpsHeading(angle);
-          break;
+        waitForGpsHeading(angle);
+        break;
         case BACKWARD_RIGHT:
           drive(0, -100);
-          waitForGpsHeading(angle);
-          break;
+        waitForGpsHeading(angle);
+        break;
         case BACKWARD_LEFT:
           drive(-100, 0);
-          waitForGpsHeading(angle);
-          break;
+        waitForGpsHeading(angle);
+        break;
     }
     drive(0, 0);
 }
@@ -94,12 +94,12 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
       {
         if(right)
           {
-            drive(100, 60);
+            drive(100, 50);
             lineFollowState = LINE_FOLLOW_RIGHT;
         }
         else if(left)
           {
-            drive(60, 100);
+            drive(50, 100);
             lineFollowState = LINE_FOLLOW_LEFT;
         }
         else
