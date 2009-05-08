@@ -8,26 +8,26 @@ void drive(int left, int right)
     motor(rightMotor, right);
 }
 
-void turn(int ticks, int direction)
+void turn(int angle, int direction)
 {
     switch(direction)
-      {
+    {
         case FORWARD_RIGHT:
           drive(100, 0);
-        encoderCount(leftEncoder, ticks);
-        break;
+          waitForGpsHeading(angle);
+          break;
         case FORWARD_LEFT:
           drive(0, 100);
-        encoderCount(rightEncoder, ticks);
-        break;
+          waitForGpsHeading(angle);
+          break;
         case BACKWARD_RIGHT:
           drive(0, -100);
-        encoderCount(rightEncoder, ticks);
-        break;
+          waitForGpsHeading(angle);
+          break;
         case BACKWARD_LEFT:
           drive(-100, 0);
-        encoderCount(leftEncoder, ticks);
-        break;
+          waitForGpsHeading(angle);
+          break;
     }
     drive(0, 0);
 }

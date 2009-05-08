@@ -29,12 +29,13 @@ int main()
     while(!stop_button())
     {
         sleep(0.1);
-        knobValue = knob() /23; // value of 0 to 10
+        knobValue = knob() / 24; // value of 0 to 10
         switch (knobValue)
         {
             case 0: printf("0: From Start\n"); break;
             case 1: printf("1: Depress Plunger\n"); break;
             case 2: printf("2: Get Gem\n"); break;
+            case 3: printf("3: GPS test\n"); break;
             default: printf("%d: Invalid command\n", knobValue); break;
         }
     }
@@ -55,6 +56,15 @@ int main()
           break;
         case 2: // Get gem
           GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);   
+          break;
+        case 3: // GPS test
+          while(1)
+          {
+            // Wait for data
+            while(!gps_get_data());
+            // Print out gps variables
+            printf("%d %d %d %d\n", gps_x, gps_y, gps_heading, gps_debris);
+          }
           break;
     }
     

@@ -13,7 +13,7 @@ void DropOffDynamite()
     driveStraight(ticks(22.0), FORWARD);
     
     // Turn toward dynamite dropbox
-    turn(ticks(7.6), FORWARD_LEFT);
+    turn(36, FORWARD_LEFT);
     
     // Drive toward dropbox
     driveStraight(ticks(19.0), FORWARD);
@@ -31,13 +31,13 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
     driveStraight(ticks(9.0), BACKWARD);
     
     // Turn toward plunger
-    turn(ticks(5.0), FORWARD_LEFT);
+    turn(65, FORWARD_LEFT);
     
     // Drive toward plunger
     driveStraight(ticks(20.0), FORWARD);
     
     // Turn toward plunger to help the line-following routine
-    turn(ticks(8.0), FORWARD_LEFT);
+    turn(40, FORWARD_LEFT);
     
     leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
