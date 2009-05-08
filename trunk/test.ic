@@ -36,6 +36,7 @@ int main()
             case 1: printf("1: Depress Plunger\n"); break;
             case 2: printf("2: Get Gem\n"); break;
             case 3: printf("3: GPS test\n"); break;
+            case 4: printf("4: Servo test\n"); break;
             default: printf("%d: Invalid command\n", knobValue); break;
         }
     }
@@ -64,6 +65,14 @@ int main()
             while(!gps_get_data());
             // Print out gps variables
             printf("%d %d %d %d\n", gps_x, gps_y, gps_heading, gps_debris);
+          }
+          break;
+        case 4: // Servo test
+          while(1)
+          {
+            sleep(0.1);
+            implement((int)((((float)knob()) / 255.0) * 180.0));
+            printf("Servo: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
           }
           break;
     }
