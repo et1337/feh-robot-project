@@ -10,7 +10,7 @@ void WaitForStartLight(int startLightValue)
 void DropOffDynamite()
 {
     // Drive down the ramp
-    driveStraight(ticks(22.5), FORWARD);
+    driveStraight(ticks(23.0), FORWARD);
     
     // Turn toward dynamite dropbox
     turn(33, FORWARD_LEFT);
@@ -28,16 +28,15 @@ void DropOffDynamite()
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     // Back up a little
-    driveStraight(ticks(8.0), BACKWARD);
+    driveStraight(ticks(7.0), BACKWARD);
     
-    // Turn toward plunger
-    turn(55, FORWARD_LEFT);
+    turn(50, BACKWARD_LEFT);
     
     // Drive toward plunger
     driveStraight(ticks(19.0), FORWARD);
     
     // Turn toward plunger to help the line-following routine
-    turn(110, FORWARD_LEFT);
+    turn(100, FORWARD_LEFT);
     
     leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
@@ -49,7 +48,7 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
     lineFollowState = LINE_FOLLOW_LEFT;
     // Follow the line until we bump into the plunger
     while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
-      {
+    {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     drive(0, 0);
@@ -62,13 +61,10 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
 
 void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
+    long startTime = 0L;
     // Turn backwards and to the right; we're trying to turn 180 around and follow the line
     turn(90, BACKWARD_RIGHT);
-    turn(130, BACKWARD_RIGHT);
-    
-    driveStraight(ticks(4.0), FORWARD);
-    
-    turn(150, FORWARD_RIGHT);
+    turn(110, BACKWARD_RIGHT);
     
     implement(IMPLEMENT_GEM);
     
@@ -81,13 +77,29 @@ void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloor
     lineFollowState = LINE_FOLLOW_RIGHT;
     
     // Follow the line up the ramp until we hit the gem
-    while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
-      {
+    
+    while(!gps_get_data());
+    while(gps_y < 130)
+    {
+        while(!gps_get_data());
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
-    drive(0, 0);
+    startTime = mseconds();
+    while(mseconds() < startTime + 1500L)
+    {
+       drive(100, 100);
+    }
+    
+    while(!gps_get_data());
+    while(gps_y < 240)
+    {
+        while(!gps_get_data());
+        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    }
     
     // Stop
     drive(0, 0);
+    
+    implement(IMPLEMENT_UP);
 }
