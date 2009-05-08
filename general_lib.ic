@@ -13,7 +13,7 @@ void DropOffDynamite()
     driveStraight(ticks(22.0), FORWARD);
     
     // Turn toward dynamite dropbox
-    turn(36, FORWARD_LEFT);
+    turn(33, FORWARD_LEFT);
     
     // Drive toward dropbox
     driveStraight(ticks(19.0), FORWARD);
@@ -28,16 +28,16 @@ void DropOffDynamite()
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     // Back up a little
-    driveStraight(ticks(9.0), BACKWARD);
+    driveStraight(ticks(8.0), BACKWARD);
     
     // Turn toward plunger
-    turn(65, FORWARD_LEFT);
+    turn(55, FORWARD_LEFT);
     
     // Drive toward plunger
-    driveStraight(ticks(20.0), FORWARD);
+    driveStraight(ticks(19.0), FORWARD);
     
     // Turn toward plunger to help the line-following routine
-    turn(40, FORWARD_LEFT);
+    turn(110, FORWARD_LEFT);
     
     leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
@@ -69,6 +69,8 @@ void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloor
     
     turn(ticks(4.0), FORWARD_RIGHT);
     
+    implement(IMPLEMENT_GEM);
+    
     leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
     rightLineFloorValue = analog(rightLinePort);
@@ -76,10 +78,9 @@ void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloor
     
     lineFollowState = LINE_FOLLOW_RIGHT;
     
-    
     // Follow the line up the ramp until we hit the gem
     while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
-      {
+    {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
