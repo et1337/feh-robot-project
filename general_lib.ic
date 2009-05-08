@@ -10,7 +10,7 @@ void WaitForStartLight(int startLightValue)
 void DropOffDynamite()
 {
     // Drive down the ramp
-    driveStraight(ticks(22.0), FORWARD);
+    driveStraight(ticks(22.5), FORWARD);
     
     // Turn toward dynamite dropbox
     turn(33, FORWARD_LEFT);
@@ -49,7 +49,7 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
     lineFollowState = LINE_FOLLOW_LEFT;
     // Follow the line until we bump into the plunger
     while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
-    {
+      {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     drive(0, 0);
@@ -63,28 +63,30 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
 void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     // Turn backwards and to the right; we're trying to turn 180 around and follow the line
-    turn(ticks(22.0), BACKWARD_RIGHT);
+    turn(90, BACKWARD_RIGHT);
+    turn(130, BACKWARD_RIGHT);
     
     driveStraight(ticks(4.0), FORWARD);
     
-    turn(ticks(4.0), FORWARD_RIGHT);
+    turn(150, FORWARD_RIGHT);
     
     implement(IMPLEMENT_GEM);
     
     leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
     rightLineFloorValue = analog(rightLinePort);
+    
     driveStraightWaitForLine(centerLineFloorValue);
     
     lineFollowState = LINE_FOLLOW_RIGHT;
     
     // Follow the line up the ramp until we hit the gem
     while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
-    {
+      {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
-    //driveStraightWaitForBump();
+    drive(0, 0);
     
     // Stop
     drive(0, 0);
