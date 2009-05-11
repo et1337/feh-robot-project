@@ -30,8 +30,13 @@
 #define BACKWARD_LEFT 3
 #define LINE_FOLLOW_LEFT 0
 #define LINE_FOLLOW_RIGHT 1
+#define LEFT 1
+#define RIGHT -1
 
 // Motor/servo constants
 #define IMPLEMENT_UP 0
-#define IMPLEMENT_DOWN 180
-#define IMPLEMENT_GEM 164
+#define IMPLEMENT_DOWN 50
+#define IMPLEMENT_GEM 26
+
+
+

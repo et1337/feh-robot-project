@@ -5,7 +5,7 @@ void initGPS()
 {
     int region;
     while(!stop_button())
-    {
+      {
         sleep(0.1);
         region = (knob()/32) + 65;
         printf("Region %c\n", region);
@@ -24,17 +24,19 @@ void waitForGpsHeading(int x)
     while(!gps_get_data());
     initial = gps_heading;
     if(initial < x)
-    {
+      {
         while(gps_heading < x)
-        {
+          {
             while(!gps_get_data());
+            printf("initial = %d,   heading = %d\n", initial, gps_heading);
         }
     }
     else
-    {
+      {
         while(gps_heading > x)
-        {
+          {
             while(!gps_get_data());
+            printf("initial = %d,   heading = %d\n", initial, gps_heading);
         }
     }
 }

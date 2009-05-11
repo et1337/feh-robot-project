@@ -10,13 +10,14 @@ void WaitForStartLight(int startLightValue)
 void DropOffDynamite()
 {
     // Drive down the ramp
-    driveStraight(ticks(23.0), FORWARD);
+    driveStraight(ticks(25.0), FORWARD);
     
     // Turn toward dynamite dropbox
-    turn(33, FORWARD_LEFT);
+    //turn(33, FORWARD_LEFT);
+    GPSTurn(16, LEFT);
     
     // Drive toward dropbox
-    driveStraight(ticks(19.0), FORWARD);
+    driveStraight(ticks(16.5), FORWARD);
     
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
@@ -24,7 +25,34 @@ void DropOffDynamite()
     implement(IMPLEMENT_UP);
     sleep(1.0);
 }
-
+void GotoPlunger()
+{
+    int left, right, center;
+    left = analog(leftLinePort);
+    center = analog(centerLinePort);
+    right = analog(rightLinePort);
+    // Back up a little
+    driveStraight(ticks(12.0), BACKWARD);
+    GPSTurn(20, LEFT);
+    driveStraight(ticks(17.0), FORWARD);
+    GPSTurn(30, RIGHT);
+    driveStraightWaitForLine(center);
+    GPSTurn(80, LEFT);
+}
+void HitPlunger(int left, int center, int right)
+{
+    implement(IMPLEMENT_UP);
+    //FollowFor(ticks(8.0), left, right, center);
+    driveStraight(ticks(10.0), FORWARD);
+    implement(IMPLEMENT_DOWN);
+    msleep(1000L);
+    implement(IMPLEMENT_UP);
+}
+void UpRamp(int left, int right, int center)
+{
+    driveStraight(ticks(8.0), BACKWARD);
+    GPSTurn(170, RIGHT);
+}
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     // Back up a little
@@ -48,7 +76,7 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
     lineFollowState = LINE_FOLLOW_LEFT;
     // Follow the line until we bump into the plunger
     while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
-    {
+      {
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     drive(0, 0);
@@ -80,20 +108,20 @@ void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloor
     
     while(!gps_get_data());
     while(gps_y < 130)
-    {
+      {
         while(!gps_get_data());
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
     startTime = mseconds();
     while(mseconds() < startTime + 1500L)
-    {
-       drive(100, 100);
+      {
+        drive(100, 100);
     }
     
     while(!gps_get_data());
     while(gps_y < 240)
-    {
+      {
         while(!gps_get_data());
         followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
