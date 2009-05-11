@@ -2,6 +2,10 @@
 #include "encoder_lib.ic"
 #include "gps_lib.ic"
 int lineFollowState = LINE_FOLLOW_LEFT;
+int OnLine(int port, int value)
+{
+    return (analog(port) > value + LINE_THRESHOLD);
+}
 void drive(int left, int right)
 {
     motor(leftMotor, left);
@@ -171,5 +175,26 @@ void FollowFor(int distance, int left, int center, int right)
 {
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
-    while(getEncoder(leftEncoder) < distance) followLine(left, right, center);
+    while(getEncoder(leftEncoder) < distance) followLine(left, center, right);
+}
+void FollowHeading(int distance, int direction, int angle)
+{
+    drive(100 * direction, 100 * direction);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(getEncoder(leftEncoder) < distance)
+      {
+        while(!gps_get_data());
+        if(gps_heading < angle - 2)
+          drive(50 * direction, 100 * direction);
+        else if(gps_heading < angle - 1)
+          drive(80 * direction, 100 * direction);
+        else if(gps_heading > angle + 2)
+          drive(100 * direction, 50 * direction);
+        else if(gps_heading > angle + 1)
+          drive(100 * direction, 80 * direction);
+        else
+        drive(100 * direction, 100 * direction);
+    }
+    drive(0, 0);
 }

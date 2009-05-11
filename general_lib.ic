@@ -10,14 +10,14 @@ void WaitForStartLight(int startLightValue)
 void DropOffDynamite()
 {
     // Drive down the ramp
-    driveStraight(ticks(25.0), FORWARD);
+    driveStraight(ticks(26.8), FORWARD);
     
     // Turn toward dynamite dropbox
     //turn(33, FORWARD_LEFT);
-    GPSTurn(16, LEFT);
+    GPSTurn(15, LEFT);
     
     // Drive toward dropbox
-    driveStraight(ticks(16.5), FORWARD);
+    driveStraight(ticks(17.0), FORWARD);
     
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
@@ -34,10 +34,10 @@ void GotoPlunger()
     // Back up a little
     driveStraight(ticks(12.0), BACKWARD);
     GPSTurn(20, LEFT);
-    driveStraight(ticks(17.0), FORWARD);
+    driveStraight(ticks(14.0), FORWARD);
     GPSTurn(30, RIGHT);
     driveStraightWaitForLine(center);
-    GPSTurn(80, LEFT);
+    GPSTurn(70, LEFT);
 }
 void HitPlunger(int left, int center, int right)
 {
@@ -48,10 +48,14 @@ void HitPlunger(int left, int center, int right)
     msleep(1000L);
     implement(IMPLEMENT_UP);
 }
-void UpRamp(int left, int right, int center)
+void UpRamp(int left, int center, int right)
 {
-    driveStraight(ticks(8.0), BACKWARD);
-    GPSTurn(170, RIGHT);
+    driveStraight(ticks(5.0), BACKWARD);
+    implement(IMPLEMENT_GEM);
+    GPSTurn(160, RIGHT);
+    while (!OnLine(rightLinePort, right))
+           GPSTurn(3, RIGHT);
+    FollowHeading(ticks(10.0), FORWARD, 138);
 }
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
@@ -86,8 +90,11 @@ void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightL
     sleep(1.0);
     implement(IMPLEMENT_UP);
 }
-
-void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+void GetGem()
+{
+    
+}
+/*void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     long startTime = 0L;
     // Turn backwards and to the right; we're trying to turn 180 around and follow the line
@@ -130,4 +137,4 @@ void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloor
     drive(0, 0);
     
     implement(IMPLEMENT_UP);
-}
+}*/
