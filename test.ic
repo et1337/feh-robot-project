@@ -38,55 +38,83 @@ int main()
             case 3: printf("3: GPS test\n"); break;
             case 4: printf("4: Servo test\n"); break;
             case 5: printf("5: Gem servo test\n"); break;
-            default: printf("%d: Invalid command\n", knobValue); break;
+            case 6: printf("6: Turn test\n"); break;
+            case 7: printf("7: Line Follow test\n"); break;
+            default: printf("%d: From Start\n", knobValue); knobValue =  0; break;
         }
     }
     while(stop_button());
-    switch (knobValue)
+    leftLineFloorValue = analog(leftLinePort);
+    centerLineFloorValue = analog(centerLinePort);
+    rightLineFloorValue = analog(rightLinePort);
+    if (knobValue == 0) // Everything
       {
-        case 0: // Everything
-          WaitForStartLight(startLightValue);
+        printf("Waiting on light\n");
+        startLightValue = analog(startLightPort);
+        WaitForStartLight(startLightValue);
         DropOffDynamite();
-        DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-        sleep(1.0);
+    } if (knobValue <= 1)  {// Press plunger
+        GotoPlunger();
+        HitPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        sleep(1.0);  // wait for ramp
+    } if (knobValue <= 2) {// get gem
+        UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        while (!stop_button());
         GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);  
-        break;
-        case 1: // Press plunger, get gem
-          DepressPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-        sleep(1.0); // Wait for ramp
-        GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);   
-        break;
-        case 2: // Get gem
-          GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);   
-        break;
-        case 3: // GPS test
-          while(1)
+    }
+    if (knobValue == 3) { // GPS Test
+        while(1)
           {
             // Wait for data
             while(!gps_get_data());
             // Print out gps variables
             printf("%d %d %d %d\n", gps_x, gps_y, gps_heading, gps_debris);
         }
-        break;
-        case 4: // Servo test
-          while(1)
+    }
+    if (knobValue == 4) {// Servo test
+        while(1)
           {
             sleep(0.1);
             implement((int)((((float)knob()) / 255.0) * 180.0));
             printf("Servo: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
         }
-        break;
-        case 5: // Gem servo test
-          implement(IMPLEMENT_GEM);
-          sleep(1.0);
-          while(!gps_get_data());
-          while(gps_y < 240)
+    }
+    if (knobValue == 5) {// Gem servo test
+        implement(IMPLEMENT_GEM);
+        sleep(1.0);
+        while(!gps_get_data());
+        while(gps_y < 240)
           {
             while(!gps_get_data());
             drive(100, 100);
         }
         drive(0, 0);
-        break;
+    }
+    if (knobValue == 6)
+      {
+        /*turn(45, FORWARD_LEFT);
+        beep(); beep();
+        msleep(2000L);
+        turn(45, FORWARD_RIGHT);
+        beep(); beep();
+        msleep(2000L);
+        turn(90, BACKWARD_LEFT);
+        beep(); beep();
+        msleep(2000L);
+        turn(90, FORWARD_RIGHT);
+        beep(); beep();*/
+        GPSTurn(90, LEFT);
+        msleep(4000L);
+        GPSTurn(90, RIGHT);
+        msleep(4000L);
+        GPSTurn(90, LEFT);
+        msleep(4000L);
+        GPSTurn(90, RIGHT);
+    }
+    if (knobValue == 7)
+      {
+        while (!stop_button())
+          followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
     sleep(3.0); // Let servos finish moving before disabling

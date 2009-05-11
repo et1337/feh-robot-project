@@ -1,7 +1,7 @@
-#use "constants_lib.ic"
-#use "encoder_lib.ic"
-#use "gps_lib.ic"
-
+#include "constants_lib.ic"
+#include "encoder_lib.ic"
+#include "gps_lib.ic"
+int lineFollowState = LINE_FOLLOW_LEFT;
 void drive(int left, int right)
 {
     motor(leftMotor, left);
@@ -31,7 +31,49 @@ void turn(int angle, int direction)
     }
     drive(0, 0);
 }
-
+void GPSTurn(int angle, int dir)
+{
+    int initial, final;
+    // Wait for data
+    printf("Turning...\n");
+    while(!gps_get_data());
+    initial = gps_heading;
+    printf("Got data, initial = %d\n", initial);
+    if (dir == LEFT) {
+        drive(-100, 100);
+        if (initial + angle > 180)
+          {
+            while (gps_heading > initial - 1) {
+                printf("%d First\n", gps_heading);
+                while(!gps_get_data());
+            }
+            while (gps_heading < (initial + angle - 180))
+              {
+                while(!gps_get_data());
+                printf("%d Second\n", gps_heading);
+            }
+        } else
+          while (gps_heading < initial + angle)
+            while (!gps_get_data());
+    } else if (dir == RIGHT) {
+        drive(100, -100);
+        if (initial - angle < 0)
+          {
+            while (gps_heading < initial + 1) {
+                printf("%d First\n", gps_heading);
+                while(!gps_get_data());
+            }
+            while (gps_heading < (initial - angle + 180))
+              {
+                while(!gps_get_data());
+                printf("%d Second\n", gps_heading);
+            }
+        } else
+          while (gps_heading > initial - angle)
+            while (!gps_get_data());
+    }
+    drive(0,0);
+}
 void driveStraight(int distance, int direction)
 {
     drive(100 * direction, 100 * direction);
@@ -83,7 +125,6 @@ void driveStraightWaitForBump()
     drive(0, 0);
 }
 
-int lineFollowState = LINE_FOLLOW_LEFT;
 void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
@@ -124,4 +165,11 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
         else if(lineFollowState == LINE_FOLLOW_LEFT)
           drive(0, 100);
     }
+}
+// Follows line for a given distance based on encoders
+void FollowFor(int distance, int left, int center, int right)
+{
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(getEncoder(leftEncoder) < distance) followLine(left, right, center);
 }
