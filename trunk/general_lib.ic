@@ -43,7 +43,7 @@ void HitPlunger(int left, int center, int right)
 {
     implement(IMPLEMENT_UP);
     //FollowFor(ticks(8.0), left, right, center);
-    driveStraight(ticks(10.0), FORWARD);
+    FollowHeading(ticks(10.0), FORWARD, 138);
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
     implement(IMPLEMENT_UP);
@@ -52,10 +52,11 @@ void UpRamp(int left, int center, int right)
 {
     driveStraight(ticks(5.0), BACKWARD);
     implement(IMPLEMENT_GEM);
-    GPSTurn(160, RIGHT);
-    while (!OnLine(rightLinePort, right))
-           GPSTurn(3, RIGHT);
-    FollowHeading(ticks(10.0), FORWARD, 138);
+    GPSTurn(175, RIGHT);
+    //FollowFor(ticks(15.0), left, center, right);
+    //while (!OnLine(rightLinePort, right))
+           //GPSTurn(3, RIGHT);
+    FollowHeading(ticks(20.0), FORWARD, 138);
 }
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
