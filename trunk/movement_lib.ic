@@ -63,7 +63,10 @@ void GPSTurn(int angle, int dir)
             }
         } else
           while (gps_heading < initial + angle)
+            {
             while (!gps_get_data());
+              printf("heading=%d\n",gps_heading);
+          }
     } else if (dir == RIGHT) {
         drive(100, -100);
         if (initial - angle < 0)
@@ -79,7 +82,10 @@ void GPSTurn(int angle, int dir)
             }
         } else
           while (gps_heading > initial - angle)
+            {
             while (!gps_get_data());
+              printf("heading=%d\n",gps_heading);
+          }
     }
     drive(0,0);
 }
@@ -136,7 +142,7 @@ void driveStraightToX(int x)
             drive(100, 100);
         }
     } else {
-          while(gps_x > x)
+        while(gps_x > x)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
@@ -145,7 +151,7 @@ void driveStraightToX(int x)
               drive(50, 100);
             else
             drive(100, 100);
-        drive(0, 0);   
+            drive(0, 0);   
         }
     }
 }
@@ -169,7 +175,7 @@ void driveStraightToY(int y)
             drive(100, 100);
         }
     } else {
-          while(gps_y > y)
+        while(gps_y > y)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)

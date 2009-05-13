@@ -12,6 +12,7 @@
 #define leftLinePort 16
 #define centerLinePort 18
 #define rightLinePort 20
+#define colorPort 22
 
 // Digital sensors
 #define frontLeftSwitch 8
@@ -20,6 +21,9 @@
 // Sensor constants
 #define START_LIGHT_THRESHOLD 10
 #define LINE_THRESHOLD 10
+#define BLUE_THRESHOLD
+#define RED 1
+#define BLUE 2
 
 // Direction constants
 #define BACKWARD -1
