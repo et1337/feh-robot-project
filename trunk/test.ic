@@ -39,7 +39,7 @@ int main()
             case 4: printf("4: Servo test\n"); break;
             case 5: printf("5: Gem servo test\n"); break;
             case 6: printf("6: Turn test\n"); break;
-            case 7: printf("7: Line Follow test\n"); break;
+            case 7: printf("7: Arm test\n"); break;
             case 8: printf("8: Just up Ramp\n"); break;
             default: printf("%d: From Start\n", knobValue); knobValue =  0; break;
         }
@@ -75,9 +75,11 @@ int main()
         }
     }
     if (knobValue == 3) { // GPS Test
+        printf("Waiting for GPS\n");
         while(1)
           {
             // Wait for data
+            
             while(!gps_get_data());
             // Print out gps variables
             printf("%d %d %d %d\n", gps_x, gps_y, gps_heading, gps_debris);
@@ -125,8 +127,13 @@ int main()
     }
     if (knobValue == 7)
       {
-        while (!stop_button())
-          followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        implement(180);
+        msleep(3000L);
+        implement(0);
+        msleep(3000L);
+        implement(180);
+        msleep(3000L);
+        implement(0);
     }
     
     sleep(3.0); // Let servos finish moving before disabling

@@ -9,11 +9,8 @@ void WaitForStartLight(int startLightValue)
 }
 void ArmToGem()
 {
-    implement(0);
-    msleep(2000L);
-    implement(30);
-    msleep(5400L);
-    implement(26);
+    implement(IMPLEMENT_GEM);
+    msleep(3000L);
 }
 void DropOffDynamite()
 {
@@ -24,13 +21,13 @@ void DropOffDynamite()
     // Turn toward dynamite dropbox
     //turn(33, FORWARD_LEFT);
     GPSTurn(16, LEFT);
-    //FollowHeading(ticks(10.0), FORWARD, 43);    
+    FollowHeading(ticks(10.0), FORWARD, 43);    
     // Drive toward dropbox
     //driveStraight(ticks(17.0), FORWARD);
     driveStraightToY(175);
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
-    sleep(2.0);
+    sleep(4.0);
     implement(IMPLEMENT_UP);
     sleep(1.0);
 }
@@ -42,9 +39,9 @@ void GotoPlunger()
     right = analog(rightLinePort);
     // Back up a little
     driveStraight(ticks(12.0), BACKWARD);
-    GPSTurn(45, LEFT); // turn to 50
+    GPSTurn(35, LEFT); // turn to 50
     driveStraight(ticks(14.0), FORWARD);
-    GPSTurn(55, RIGHT); // turn to 41
+    GPSTurn(45, RIGHT); // turn to 41
     driveStraight(ticks(8.0), FORWARD);
     driveStraightWaitForLine(center);
     GPSTurn(70, LEFT);
@@ -53,73 +50,52 @@ void HitPlunger(int left, int center, int right)
 {
     implement(IMPLEMENT_UP);
     //FollowFor(ticks(8.0), left, right, center);
-    FollowHeading(ticks(11.0), FORWARD, 138);
-    //if (gps_y < 190)
-    //  driveStraightToY(190);
-    implement(IMPLEMENT_DOWN);
-    msleep(1000L);
-    implement(IMPLEMENT_UP);
-    msleep(2000L);
-    implement(IMPLEMENT_DOWN);
-    msleep(1000L);
-    implement(IMPLEMENT_UP);
+    //FollowHeading(ticks(11.0), FORWARD, 138);
+    //FollowHeading(ticks(6.0), FORWARD, 138);
+    //driveStraightToY(190);
+    HeadingToY(190, 138, FORWARD);
+    while (!gps_debris) {
+        implement(IMPLEMENT_DOWN);
+        msleep(1500L);
+        implement(IMPLEMENT_UP);
+        msleep(2000L);
+        while(!gps_get_data());
+    }
+
 }
 void UpRamp(int left, int center, int right)
 {
     driveStraight(ticks(5.0), BACKWARD);
     GPSTurn(178, RIGHT);
-    GPSTurn(10, RIGHT);
+    GPSTurn(5, RIGHT);
     //FollowFor(ticks(15.0), left, center, right);
     //while (!OnLine(rightLinePort, right))
     //GPSTurn(3, RIGHT);
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
     ArmToGem();
-    FollowHeading(ticks(14.0), FORWARD, 138);
+    FollowHeading(ticks(5.0), FORWARD, 138);
+    //driveStraightToY(245);
+    HeadingToY(245, 138, FORWARD);
     msleep(2000L);
-}
-void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
-{
-    // Back up a little
-    driveStraight(ticks(7.0), BACKWARD);
-    
-    turn(50, BACKWARD_LEFT);
-    
-    // Drive toward plunger
-    driveStraight(ticks(19.0), FORWARD);
-    
-    // Turn toward plunger to help the line-following routine
-    turn(100, FORWARD_LEFT);
-    
-    leftLineFloorValue = analog(leftLinePort);
-    centerLineFloorValue = analog(centerLinePort);
-    rightLineFloorValue = analog(rightLinePort);
-    
-    // Drive toward plunger until we hit the second line
-    driveStraightWaitForLine(centerLineFloorValue);
-    
-    lineFollowState = LINE_FOLLOW_LEFT;
-    // Follow the line until we bump into the plunger
-    while(!(digital(frontLeftSwitch) && digital(frontRightSwitch)))
-      {
-        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-    }
-    drive(0, 0);
-    
-    // Lower and raise the implement
-    implement(IMPLEMENT_DOWN);
-    sleep(1.0);
-    implement(IMPLEMENT_UP);
 }
 void GetGem()
 {
+    driveStraight(ticks(3.0), FORWARD);
+    driveStraight(ticks(0.8), BACKWARD);
+    driveStraight(ticks(3.0), FORWARD);
+    driveStraight(ticks(0.8), BACKWARD);
+    driveStraight(ticks(3.0), FORWARD);
+    driveStraight(ticks(0.8), BACKWARD);
+    driveStraight(ticks(3.0), FORWARD);
     implement(IMPLEMENT_UP);
     msleep(1000L);
     
 }
+
 void ToBox()
 {
-    FollowHeading(ticks(28.0), FORWARD, 138);   
+    FollowHeading(ticks(28.0), BACKWARD, 138);   
 }
 /*void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
