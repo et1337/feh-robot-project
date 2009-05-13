@@ -12,7 +12,7 @@ void ArmToGem()
     implement(0);
     msleep(2000L);
     implement(30);
-    msleep(3500L);
+    msleep(5400L);
     implement(26);
 }
 void DropOffDynamite()
@@ -59,17 +59,23 @@ void HitPlunger(int left, int center, int right)
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
     implement(IMPLEMENT_UP);
+    msleep(2000L);
+    implement(IMPLEMENT_DOWN);
+    msleep(1000L);
+    implement(IMPLEMENT_UP);
 }
 void UpRamp(int left, int center, int right)
 {
     driveStraight(ticks(5.0), BACKWARD);
-    ArmToGem();
     GPSTurn(178, RIGHT);
+    GPSTurn(10, RIGHT);
     //FollowFor(ticks(15.0), left, center, right);
     //while (!OnLine(rightLinePort, right))
     //GPSTurn(3, RIGHT);
     driveStraight(ticks(4.0), FORWARD);
-    FollowHeading(ticks(24.0), FORWARD, 138);
+    FollowHeading(ticks(10.0), FORWARD, 138);
+    ArmToGem();
+    FollowHeading(ticks(14.0), FORWARD, 138);
     msleep(2000L);
 }
 void DepressPlunger(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
@@ -109,7 +115,7 @@ void GetGem()
 {
     implement(IMPLEMENT_UP);
     msleep(1000L);
-
+    
 }
 void ToBox()
 {
