@@ -60,6 +60,8 @@ int main()
         sleep(2.0);  // wait for ramp
     } if (knobValue <= 2) {// get gem
         UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        GetGem();
+        ToBox();
         while (!stop_button());
         //GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);  
     }

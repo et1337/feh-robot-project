@@ -34,7 +34,7 @@
 #define RIGHT -1
 
 // Motor/servo constants
-#define IMPLEMENT_UP 0
+#define IMPLEMENT_UP 10
 #define IMPLEMENT_DOWN 50
 #define IMPLEMENT_GEM 26
 

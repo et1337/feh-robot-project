@@ -35,6 +35,11 @@ void turn(int angle, int direction)
     }
     drive(0, 0);
 }
+void EncTurn(int angle, int dir)
+{
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+}
 void GPSTurn(int angle, int dir)
 {
     int initial, final;
@@ -111,6 +116,73 @@ void driveStraightWaitForLine(int floorValue)
     }
     drive(0, 0);
 }
+void driveStraightToX(int x)
+{
+    int initial;
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(!gps_get_data());
+    initial = gps_x;
+    if (initial < x) {
+        while(gps_x < x)
+          {
+            while(!gps_get_data());
+            if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+              drive(100, 50);
+            else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+              drive(50, 100);
+            else
+            drive(100, 100);
+        }
+    } else {
+          while(gps_x > x)
+          {
+            while(!gps_get_data());
+            if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+              drive(100, 50);
+            else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+              drive(50, 100);
+            else
+            drive(100, 100);
+        drive(0, 0);   
+        }
+    }
+}
+void driveStraightToY(int y)
+{
+    int initial;
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(!gps_get_data());
+    initial = gps_y;
+    if (initial < y) {
+        while(gps_y < y)
+          {
+            while(!gps_get_data());
+            if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+              drive(100, 50);
+            else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+              drive(50, 100);
+            else
+            drive(100, 100);
+        }
+    } else {
+          while(gps_y > y)
+          {
+            while(!gps_get_data());
+            if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+              drive(100, 50);
+            else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+              drive(50, 100);
+            else
+            drive(100, 100);
+        }
+    }
+    drive(0, 0);   
+}
+
 
 void driveStraightWaitForBump()
 {
