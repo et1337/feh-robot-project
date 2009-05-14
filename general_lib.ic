@@ -61,7 +61,7 @@ void HitPlunger(int left, int center, int right)
         msleep(2000L);
         while(!gps_get_data());
     }
-
+    
 }
 void UpRamp(int left, int center, int right)
 {
@@ -95,49 +95,11 @@ void GetGem()
 
 void ToBox()
 {
-    FollowHeading(ticks(28.0), BACKWARD, 138);   
+    HeadingToY(200, 138, BACKWARD);
+    GPSTurn(70, RIGHT);
+    driveStraightWaitForLine(analog(centerLinePort));
+    GPSTurn(15, RIGHT);
+    HeadingToLine(analog(centerLinePort), 0, FORWARD);
+    GPSTurn(70, LEFT);
+    
 }
-/*void GetGem(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
-{
-    long startTime = 0L;
-    // Turn backwards and to the right; we're trying to turn 180 around and follow the line
-    turn(90, BACKWARD_RIGHT);
-    turn(110, BACKWARD_RIGHT);
-    
-    implement(IMPLEMENT_GEM);
-    
-    leftLineFloorValue = analog(leftLinePort);
-    centerLineFloorValue = analog(centerLinePort);
-    rightLineFloorValue = analog(rightLinePort);
-    
-    driveStraightWaitForLine(centerLineFloorValue);
-    
-    lineFollowState = LINE_FOLLOW_RIGHT;
-    
-    // Follow the line up the ramp until we hit the gem
-    
-    while(!gps_get_data());
-    while(gps_y < 130)
-      {
-        while(!gps_get_data());
-        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-    }
-    
-    startTime = mseconds();
-    while(mseconds() < startTime + 1500L)
-      {
-        drive(100, 100);
-    }
-    
-    while(!gps_get_data());
-    while(gps_y < 240)
-      {
-        while(!gps_get_data());
-        followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-    }
-    
-    // Stop
-    drive(0, 0);
-    
-    implement(IMPLEMENT_UP);
-}*/
