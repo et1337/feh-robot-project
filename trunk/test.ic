@@ -41,6 +41,7 @@ int main()
             case 6: printf("6: Turn test\n"); break;
             case 7: printf("7: Arm test\n"); break;
             case 8: printf("8: Just up Ramp\n"); break;
+            case 9: printf("9: Line follow test\n"); break;
             default: printf("%d: From Start\n", knobValue); knobValue =  0; break;
         }
     }
@@ -61,9 +62,9 @@ int main()
     } if (knobValue <= 2) {// get gem
         UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         GetGem();
+        GetGemColor();
         ToBox();
         while (!stop_button());
-        //GetGem(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);  
     }
     if (knobValue == 8) {
         printf("Starting Header Follow Test\n");
@@ -134,6 +135,11 @@ int main()
         implement(180);
         msleep(3000L);
         implement(0);
+    }
+    if(knobValue == 9)
+    {
+        // Line follow test
+        while(1) followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
     sleep(3.0); // Let servos finish moving before disabling

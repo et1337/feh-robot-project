@@ -220,7 +220,7 @@ void driveStraightWaitForBump()
     drive(0, 0);
 }
 
-/*void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
     int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
     int center = (analog(centerLinePort) > centerLineFloorValue + LINE_THRESHOLD);
@@ -262,7 +262,7 @@ void driveStraightWaitForBump()
     }
 }
 // Follows line for a given distance based on encoders
-void FollowFor(int distance, int left, int center, int right)
+/*void FollowFor(int distance, int left, int center, int right)
 {
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
@@ -321,18 +321,18 @@ void TurnToHeading(int angle)
     if (initial < angle) {
         drive(-100, 100);
         while (gps_heading < angle)
-            {
-              while (!gps_get_data());
-              printf("heading=%d\n",gps_heading);
-          }
+          {
+            while (!gps_get_data());
+            printf("heading=%d\n",gps_heading);
+        }
     } else if (initial > angle) {
         drive(100, -100);
-          while (gps_heading > angle)
-            {
-              while (!gps_get_data());
-              printf("heading=%d\n",gps_heading);
-          }
+        while (gps_heading > angle)
+          {
+            while (!gps_get_data());
+            printf("heading=%d\n",gps_heading);
+        }
     }
     drive(0,0);
-
+    
 }
