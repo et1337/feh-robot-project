@@ -222,20 +222,20 @@ void driveStraightWaitForBump()
 
 void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
-    int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
+    //int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
     int center = (analog(centerLinePort) > centerLineFloorValue + LINE_THRESHOLD);
-    int right = (analog(centerLinePort) > rightLineFloorValue + LINE_THRESHOLD);
+    int right = (analog(rightLinePort) > rightLineFloorValue + LINE_THRESHOLD);
     
-    if(center)
+    /**if(center)
       {
         if(right)
           {
-            drive(100, 50);
+            drive(100, -100);
             lineFollowState = LINE_FOLLOW_RIGHT;
         }
         else if(left)
           {
-            drive(50, 100);
+            drive(-100, 100);
             lineFollowState = LINE_FOLLOW_LEFT;
         }
         else
@@ -245,29 +245,52 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
     }
     else if(left)
       {
-        drive(0, 100);
+        drive(-100, 100);
         lineFollowState = LINE_FOLLOW_LEFT;
     }
     else if(right)
       {
-        drive(100, 0);
+        drive(100, -100);
         lineFollowState = LINE_FOLLOW_RIGHT;
     }
     else
       {
         if(lineFollowState == LINE_FOLLOW_RIGHT)
-          drive(100, 0);
+          drive(100, 50);
         else if(lineFollowState == LINE_FOLLOW_LEFT)
-          drive(0, 100);
+          drive(50, 100);
+    }*/
+    if(center && !right)
+    {
+        drive(-100, 100);
+        lineFollowState = LINE_FOLLOW_LEFT;
+    }
+    else if(right && !center)
+    {
+        drive(100, -100);
+        lineFollowState = LINE_FOLLOW_RIGHT;
+    }
+    else if(right && center)
+      drive(100, 100);
+    else if((!right) && (!center))
+    {
+        if(lineFollowState == LINE_FOLLOW_LEFT)
+          drive(-100, 100);
+        else
+          drive(100, -100);
     }
 }
-// Follows line for a given distance based on encoders
-/*void FollowFor(int distance, int left, int center, int right)
+// Follows line until we hit a given GPS coordinate
+void FollowLineToY(int y, int left, int center, int right)
 {
-    setEncoder(leftEncoder, 0);
-    setEncoder(rightEncoder, 0);
-    while(getEncoder(leftEncoder) < distance) followLine(left, center, right);
-}*/
+    while(!gps_get_data());
+    while(gps_y < y)
+    {
+        while(!gps_get_data());
+        followLine(left, center, right);
+    }
+    drive(0, 0);
+}
 void FollowHeading(int distance, int direction, int angle)
 {
     drive(100 * direction, 100 * direction);

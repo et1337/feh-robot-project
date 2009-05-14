@@ -21,7 +21,7 @@
 // Sensor constants
 #define START_LIGHT_THRESHOLD 10
 #define LINE_THRESHOLD 10
-#define BLUE_THRESHOLD
+#define RED_THRESHOLD 20
 #define RED 1
 #define BLUE 2
 
