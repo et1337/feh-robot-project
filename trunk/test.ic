@@ -70,7 +70,7 @@ int main()
     if(knobValue <= 3) // Box/wall
     {
         ToBox();
-        DropOffGem(startLightValue, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        DropOffGem(startLightValue); //, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         ToWall();
         RaiseWall();
     }
