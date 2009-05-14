@@ -128,3 +128,43 @@ void ToBox()
     GPSTurn(70, LEFT);
     
 }
+
+void DropOffGem(int startLightValue, int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+{
+    FollowLineToX(90, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    implement(IMPLEMENT_DOWN);
+    msleep(500L);
+    if(analog(startLightPort) < startLightValue - RED_THRESHOLD)
+    {
+        printf("RED BOX\n");
+    }
+    else
+    {
+        printf("BLUE BOX\n");
+    }
+    implement(IMPLEMENT_UP);
+    msleep(1000L);
+}
+
+void ToWall()
+{
+    driveStraight(ticks(1.0), BACKWARD);
+    GPSTurn(90, RIGHT);
+    implement(IMPLEMENT_DOWN);
+    msleep(1000L);
+}
+
+void RaiseWall()
+{
+    driveStraightWaitForBump();
+    implement(IMPLEMENT_UP);
+    driveStraight(ticks(3.0), FORWARD);
+}
+
+void BackToBase()
+{
+    driveStraight(ticks(1.0), BACKWARD);
+    GPSTurn(180, LEFT);
+    driveStraight(ticks(10.0), FORWARD);
+    GPSTurn(90, RIGHT);
+}

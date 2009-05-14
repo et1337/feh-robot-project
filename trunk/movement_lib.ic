@@ -280,11 +280,23 @@ void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineF
           drive(100, -100);
     }
 }
-// Follows line until we hit a given GPS coordinate
+// Follows line until we hit a given GPS Y coordinate
 void FollowLineToY(int y, int left, int center, int right)
 {
     while(!gps_get_data());
     while(gps_y < y)
+    {
+        while(!gps_get_data());
+        followLine(left, center, right);
+    }
+    drive(0, 0);
+}
+
+// Follows line until we hit a given GPS X coordinate
+void FollowLineToX(int x, int left, int center, int right)
+{
+    while(!gps_get_data());
+    while(gps_x < x)
     {
         while(!gps_get_data());
         followLine(left, center, right);
