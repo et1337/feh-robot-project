@@ -12,6 +12,7 @@ int main()
     int centerLineFloorValue;
     int rightLineFloorValue;
     int knobValue;
+    int gemColor = BLUE;
     
     initServo(implementServo);
     initEncoders(); 
@@ -37,8 +38,8 @@ int main()
             case 2: printf("2: Get Gem\n"); break;
             case 3: printf("3: GPS test\n"); break;
             case 4: printf("4: Servo test\n"); break;
-            case 5: printf("5: Gem servo test\n"); break;
-            case 6: printf("6: Turn test\n"); break;
+            case 5: printf("5: Gem color test\n"); break;
+            case 6: printf("6: Analog test\n"); break;
             case 7: printf("7: Arm test\n"); break;
             case 8: printf("8: Just up Ramp\n"); break;
             case 9: printf("9: Line follow test\n"); break;
@@ -50,10 +51,12 @@ int main()
     centerLineFloorValue = analog(centerLinePort);
     rightLineFloorValue = analog(rightLinePort);
     if (knobValue == 0) // Everything
-      {
+    {
         printf("Waiting on light\n");
         startLightValue = analog(startLightPort);
         WaitForStartLight(startLightValue);
+        // Save start light value when it's on so we can compare the gem light to it.
+        startLightValue = analog(startLightPort);
         DropOffDynamite();
     } if (knobValue <= 1)  {// Press plunger
         GotoPlunger();
@@ -62,17 +65,18 @@ int main()
     } if (knobValue <= 2) {// get gem
         UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         GetGem();
-        GetGemColor();
+        gemColor = GetGemColor(startLightValue, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         ToBox();
         while (!stop_button());
     }
     if (knobValue == 8) {
-        printf("Starting Header Follow Test\n");
-        while (!start_button())
-          {
-            printf("Press stop to start\n");
+        printf("Starting Up the Ramp Test\n");
+        while(1)
+        {
             while (!stop_button());
             UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+            GetGem();
+            gemColor = GetGemColor(startLightValue, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         }
     }
     if (knobValue == 3) { // GPS Test
@@ -94,8 +98,9 @@ int main()
             printf("Servo: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
         }
     }
-    if (knobValue == 5) {// Gem servo test
-        implement(IMPLEMENT_GEM);
+    if (knobValue == 5)
+    {// Formerly gem servo test, now gem color test
+        /**implement(IMPLEMENT_GEM);
         sleep(1.0);
         while(!gps_get_data());
         while(gps_y < 240)
@@ -103,10 +108,22 @@ int main()
             while(!gps_get_data());
             drive(100, 100);
         }
-        drive(0, 0);
+        drive(0, 0);*/
+        while(!stop_button())
+        {
+            if(analog(startLightPort) < startLightValue - RED_THRESHOLD)
+            {
+                printf("RED GEM\n");
+            }
+            else
+            {
+                printf("BLUE GEM\n");
+            }
+            msleep(100L);
+        }
     }
-    if (knobValue == 6)
-      {
+    if (knobValue == 6) // Formerly GPS turn test; now hi-jacked for analog sensor test. HA!
+    {
         /*turn(45, FORWARD_LEFT);
         beep(); beep();
         msleep(2000L);
@@ -117,17 +134,22 @@ int main()
         beep(); beep();
         msleep(2000L);
         turn(90, FORWARD_RIGHT);
-        beep(); beep();*/
+        beep(); beep();
         GPSTurn(90, LEFT);
         msleep(4000L);
         GPSTurn(90, RIGHT);
         msleep(4000L);
         GPSTurn(90, LEFT);
         msleep(4000L);
-        GPSTurn(90, RIGHT);
+        GPSTurn(90, RIGHT);*/
+        while(!stop_button())
+        {
+            printf("%d:%d %d:%d %d:%d %d:%d\n", startLightPort, analog(startLightPort), leftLinePort, analog(leftLinePort), centerLinePort, analog(centerLinePort), rightLinePort, analog(rightLinePort));
+            msleep(100L);
+        }
     }
     if (knobValue == 7)
-      {
+    {
         implement(180);
         msleep(3000L);
         implement(0);
@@ -138,6 +160,10 @@ int main()
     }
     if(knobValue == 9)
     {
+        printf("Hit stop to start.\n");
+        while (!stop_button());
+        msleep(500L);
+        driveStraightWaitForLine(centerLineFloorValue);
         // Line follow test
         while(1) followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }

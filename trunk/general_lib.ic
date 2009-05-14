@@ -100,16 +100,25 @@ void GetGem()
     implement(IMPLEMENT_UP);
     msleep(500L);
     driveStraight(ticks(0.3), BACKWARD);
-    msleep(4000L);
-    
 }
 
-void GetGemColor()
+int GetGemColor(int startLightValue, int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
 {
+    FollowLineToY(256, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+    msleep(500L);
+    if(analog(startLightPort) < startLightValue - RED_THRESHOLD)
+    {
+        printf("RED GEM\n");
+        return RED;
+    }
+    printf("BLUE GEM\n");
+    return BLUE;
 }
 
 void ToBox()
 {
+    driveStraight(ticks(0.3), BACKWARD);
+    msleep(4000L);
     FollowHeading(ticks(20.0), BACKWARD, 138);
     GPSTurn(45, RIGHT);
     driveStraight(ticks(5.0), FORWARD);
