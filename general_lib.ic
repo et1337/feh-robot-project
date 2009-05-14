@@ -104,6 +104,10 @@ void GetGem()
     
 }
 
+void GetGemColor()
+{
+}
+
 void ToBox()
 {
     FollowHeading(ticks(20.0), BACKWARD, 138);
