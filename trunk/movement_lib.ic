@@ -310,3 +310,29 @@ void HeadingToLine(int floorValue, int angle, int direction)
     }
     drive(0, 0);
 }
+void TurnToHeading(int angle)
+{
+    int initial;
+    // Wait for data
+    printf("Turning...\n");
+    while(!gps_get_data());
+    initial = gps_heading;
+    printf("Got data, initial = %d\n", initial);
+    if (initial < angle) {
+        drive(-100, 100);
+        while (gps_heading < angle)
+            {
+              while (!gps_get_data());
+              printf("heading=%d\n",gps_heading);
+          }
+    } else if (initial > angle) {
+        drive(100, -100);
+          while (gps_heading > angle)
+            {
+              while (!gps_get_data());
+              printf("heading=%d\n",gps_heading);
+          }
+    }
+    drive(0,0);
+
+}

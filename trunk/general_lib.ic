@@ -44,21 +44,29 @@ void GotoPlunger()
     GPSTurn(45, RIGHT); // turn to 41
     driveStraight(ticks(8.0), FORWARD);
     driveStraightWaitForLine(center);
-    GPSTurn(70, LEFT);
+    GPSTurn(65, LEFT);
 }
 void HitPlunger(int left, int center, int right)
 {
+    int count = 0;
     implement(IMPLEMENT_UP);
     //FollowFor(ticks(8.0), left, right, center);
     //FollowHeading(ticks(11.0), FORWARD, 138);
     //FollowHeading(ticks(6.0), FORWARD, 138);
     //driveStraightToY(190);
     HeadingToY(190, 138, FORWARD);
+    implement(IMPLEMENT_DOWN);
+    msleep(1500L);
+    implement(IMPLEMENT_UP);
+    msleep(2000L);
     while (!gps_debris) {
+        if (count%2 == 0) driveStraight(ticks(1.0), FORWARD);
+        if (count%2 == 1) driveStraight(ticks(1.0), BACKWARD);
         implement(IMPLEMENT_DOWN);
         msleep(1500L);
         implement(IMPLEMENT_UP);
         msleep(2000L);
+        count++;
         while(!gps_get_data());
     }
     
@@ -66,37 +74,41 @@ void HitPlunger(int left, int center, int right)
 void UpRamp(int left, int center, int right)
 {
     driveStraight(ticks(5.0), BACKWARD);
-    GPSTurn(178, RIGHT);
-    GPSTurn(5, RIGHT);
+    GPSTurn(160, RIGHT);
+    TurnToHeading(156);
     //FollowFor(ticks(15.0), left, center, right);
     //while (!OnLine(rightLinePort, right))
     //GPSTurn(3, RIGHT);
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
     ArmToGem();
-    FollowHeading(ticks(5.0), FORWARD, 138);
+    FollowHeading(ticks(10.0), FORWARD, 138);
     //driveStraightToY(245);
-    HeadingToY(245, 138, FORWARD);
+    //HeadingToY(240, 138, FORWARD);
+    //FollowHeading(ticks(5.0), FORWARD, 138);
     msleep(2000L);
 }
 void GetGem()
 {
-    driveStraight(ticks(3.0), FORWARD);
+    /*driveStraight(ticks(3.0), FORWARD);
     driveStraight(ticks(0.8), BACKWARD);
     driveStraight(ticks(3.0), FORWARD);
     driveStraight(ticks(0.8), BACKWARD);
     driveStraight(ticks(3.0), FORWARD);
     driveStraight(ticks(0.8), BACKWARD);
-    driveStraight(ticks(3.0), FORWARD);
+    driveStraight(ticks(3.0), FORWARD);*/
     implement(IMPLEMENT_UP);
-    msleep(1000L);
+    msleep(500L);
+    driveStraight(ticks(0.3), BACKWARD);
+    msleep(4000L);
     
 }
 
 void ToBox()
 {
-    HeadingToY(200, 138, BACKWARD);
-    GPSTurn(70, RIGHT);
+    FollowHeading(ticks(20.0), BACKWARD, 138);
+    GPSTurn(45, RIGHT);
+    driveStraight(ticks(5.0), FORWARD);
     driveStraightWaitForLine(analog(centerLinePort));
     GPSTurn(15, RIGHT);
     HeadingToLine(analog(centerLinePort), 0, FORWARD);
