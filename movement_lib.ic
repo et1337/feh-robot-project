@@ -76,6 +76,22 @@ void driveStraight(int distance, int direction)
     }
     drive(0, 0);
 }
+void driveStraightP(int distance, int direction, int power)
+{
+    drive(power * direction, power * direction);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(getEncoder(leftEncoder) < distance)
+      {
+        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
+          drive(power * direction, (power/2) * direction);
+        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
+          drive((power/2) * direction, power * direction);
+        else
+        drive(power * direction, power * direction);
+    }
+    drive(0, 0);
+}
 
 void driveStraightWaitForLine(int floorValue)
 {
@@ -185,6 +201,48 @@ void HeadingToY(int y, int angle, int direction)
         }
     } else {
         while(gps_y > y)
+          {
+            while(!gps_get_data());
+            if(gps_heading < angle - 2)
+              drive(50 * direction, 100 * direction);
+            else if(gps_heading < angle - 1)
+              drive(80 * direction, 100 * direction);
+            else if(gps_heading > angle + 2)
+              drive(100 * direction, 50 * direction);
+            else if(gps_heading > angle + 1)
+              drive(100 * direction, 80 * direction);
+            else
+            drive(100 * direction, 100 * direction);
+        }
+    }
+    drive(0, 0);   
+}
+void HeadingToX(int x, int angle, int direction)
+{
+    int initial;
+    drive(100, 100);
+    setEncoder(leftEncoder, 0);
+    setEncoder(rightEncoder, 0);
+    while(!gps_get_data());
+    initial = gps_x;
+    if (initial < x) {
+        while(gps_x < x)
+          {
+            while(!gps_get_data());
+            if(gps_heading < angle - 2)
+              drive(50 * direction, 100 * direction);
+            else if(gps_heading < angle - 1)
+              drive(80 * direction, 100 * direction);
+            else if(gps_heading > angle + 2)
+              drive(100 * direction, 50 * direction);
+            else if(gps_heading > angle + 1)
+              drive(100 * direction, 80 * direction);
+            else
+            drive(100 * direction, 100 * direction);
+            
+        }
+    } else {
+        while(gps_x > x)
           {
             while(!gps_get_data());
             if(gps_heading < angle - 2)
