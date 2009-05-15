@@ -65,12 +65,13 @@ int main()
     } if (knobValue <= 2) {// get gem
         UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         GetGem();
-        gemColor = GetGemColor(startLightValue, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        gemColor = GetGemColor();
     }
     if(knobValue <= 3) // Box/wall
     {
         ToBox();
-        DropOffGem(startLightValue); //, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        DropOffGem();
+        GetGemColor();
         ToWall();
         RaiseWall();
     }
@@ -82,7 +83,7 @@ int main()
             while (!stop_button());
             UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
             GetGem();
-            gemColor = GetGemColor(startLightValue, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+            gemColor = GetGemColor();
         }
     }
     if (knobValue == 7) { // GPS Test

@@ -16,14 +16,10 @@ void DropOffDynamite()
 {
     // Drive down the ramp
     driveStraight(ticks(27.5), FORWARD);
-    //driveStraight(ticks(10.5), FORWARD);
-    //driveStraightToY(120);
     // Turn toward dynamite dropbox
-    //turn(33, FORWARD_LEFT);
     GPSTurn(16, LEFT);
     FollowHeading(ticks(10.0), FORWARD, 43);    
     // Drive toward dropbox
-    //driveStraight(ticks(17.0), FORWARD);
     driveStraightToY(175);
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
@@ -50,10 +46,6 @@ void HitPlunger(int left, int center, int right)
 {
     int count = 0;
     implement(IMPLEMENT_UP);
-    //FollowFor(ticks(8.0), left, right, center);
-    //FollowHeading(ticks(11.0), FORWARD, 138);
-    //FollowHeading(ticks(6.0), FORWARD, 138);
-    //driveStraightToY(190);
     HeadingToY(190, 138, FORWARD);
     implement(IMPLEMENT_DOWN);
     msleep(1500L);
@@ -76,27 +68,14 @@ void UpRamp(int left, int center, int right)
     driveStraight(ticks(5.0), BACKWARD);
     GPSTurn(160, RIGHT);
     TurnToHeading(156);
-    //FollowFor(ticks(15.0), left, center, right);
-    //while (!OnLine(rightLinePort, right))
-    //GPSTurn(3, RIGHT);
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
     ArmToGem();
     FollowHeading(ticks(10.0), FORWARD, 138);
-    //driveStraightToY(245);
-    //HeadingToY(240, 138, FORWARD);
-    //FollowHeading(ticks(5.0), FORWARD, 138);
     msleep(2000L);
 }
 void GetGem()
 {
-    /*driveStraight(ticks(3.0), FORWARD);
-    driveStraight(ticks(0.8), BACKWARD);
-    driveStraight(ticks(3.0), FORWARD);
-    driveStraight(ticks(0.8), BACKWARD);
-    driveStraight(ticks(3.0), FORWARD);
-    driveStraight(ticks(0.8), BACKWARD);
-    driveStraight(ticks(3.0), FORWARD);*/
     implement(IMPLEMENT_UP);
     msleep(500L);
     driveStraightP(ticks(0.3), BACKWARD, 40);
@@ -105,53 +84,45 @@ void GetGem()
     msleep(500L);
 }
 
-int GetGemColor(int startLightValue, int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+int GetGemColor()
 {
-    driveStraight(ticks(0.8), FORWARD);
-    msleep(500L);
-    //HeadingToY(250, 138, FORWARD);
-    if(analog(startLightPort) < RED_THRESHOLD)
+    long startTime = mseconds();
+    drive(50, 50);
+    while(mseconds() - startTime < 500L)
     {
-        printf("RED GEM\n");
-        msleep(1000L);
-        return RED;
+        if(analog(startLightPort) < RED_THRESHOLD)
+        {
+            printf("RED GEM\n");
+            drive(0, 0);
+            msleep(1000L);
+            return RED;
+        }
     }
-    msleep(1000L);
     printf("BLUE GEM\n");
+    drive(0, 0);
+    msleep(1000L);
     return BLUE;
 }
 
 void ToBox()
 {
-    FollowHeading(ticks(18.0), BACKWARD, 138);
+    FollowHeading(ticks(16.0), BACKWARD, 138);
     GPSTurn(45, RIGHT);
-    driveStraight(ticks(5.0), FORWARD);
-    //driveStraightWaitForLine(analog(centerLinePort));
-    HeadingToX(-40, 51, FORWARD);
+    HeadingToX(-65, 51, FORWARD);
     GPSTurn(30, RIGHT);
     FollowHeading(ticks(3.0), FORWARD, 6);
     HeadingToLine(analog(centerLinePort), 6, FORWARD);
     GPSTurn(70, LEFT);
 }
 
-void DropOffGem(int startLightValue) //, int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
+void DropOffGem()
 {
-    //FollowLineToX(90, leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     HeadingToX(-30, 92, FORWARD);
     implement(IMPLEMENT_DOWN);
     msleep(3000L);
     implement(IMPLEMENT_UP);
     msleep(2000L);
-    HeadingToX(-20, 92, FORWARD);
-    if (analog(startLightPort) < RED_THRESHOLD)
-    {
-        printf("RED BOX\n");
-    }
-    else
-    {
-        printf("BLUE BOX\n");
-    }
-    msleep(4000L);
+    HeadingToX(-24, 92, FORWARD);
 }
 
 void ToWall()
