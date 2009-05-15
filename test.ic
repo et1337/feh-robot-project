@@ -42,7 +42,6 @@ int main()
             case 6: printf("6: Analog test\n"); break;
             case 7: printf("7: GPS test\n"); break;
             case 8: printf("8: Just up Ramp\n"); break;
-            case 9: printf("9: Line follow test\n"); break;
             default: printf("%d: From Start\n", knobValue); knobValue =  0; break;
         }
     }
@@ -51,7 +50,7 @@ int main()
     centerLineFloorValue = analog(centerLinePort);
     rightLineFloorValue = analog(rightLinePort);
     if (knobValue == 0) // Everything
-    {
+      {
         printf("Waiting on light\n");
         startLightValue = analog(startLightPort);
         WaitForStartLight(startLightValue);
@@ -63,25 +62,25 @@ int main()
         HitPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
         sleep(2.0);  // wait for ramp
     } if (knobValue <= 2) {// get gem
-        UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        UpRamp();
         GetGem();
         gemColor = GetGemColor();
     }
     if(knobValue <= 3) // Box/wall
-    {
+      {
         ToBox();
         DropOffGem();
-        GetGemColor();
+        gemColor = GetGemColor();
         ToWall();
         RaiseWall();
     }
     if (knobValue == 8)
-    {
+      {
         while(1)
-        {
+          {
             printf("Starting Up the Ramp Test\n");
             while (!stop_button());
-            UpRamp(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+            UpRamp();
             GetGem();
             gemColor = GetGemColor();
         }
@@ -106,73 +105,27 @@ int main()
         }
     }
     if (knobValue == 5)
-    {// Formerly gem servo test, now gem color test
-        /**implement(IMPLEMENT_GEM);
-        sleep(1.0);
-        while(!gps_get_data());
-        while(gps_y < 240)
-          {
-            while(!gps_get_data());
-            drive(100, 100);
-        }
-        drive(0, 0);*/
+      {// Formerly gem servo test, now gem color test
         while(!stop_button())
-        {
+          {
             if(analog(startLightPort) < startLightValue - RED_THRESHOLD)
-            {
+              {
                 printf("RED GEM\n");
             }
             else
-            {
+              {
                 printf("BLUE GEM\n");
             }
             msleep(100L);
         }
     }
     if (knobValue == 6) // Formerly GPS turn test; now hi-jacked for analog sensor test. HA!
-    {
-        /*turn(45, FORWARD_LEFT);
-        beep(); beep();
-        msleep(2000L);
-        turn(45, FORWARD_RIGHT);
-        beep(); beep();
-        msleep(2000L);
-        turn(90, BACKWARD_LEFT);
-        beep(); beep();
-        msleep(2000L);
-        turn(90, FORWARD_RIGHT);
-        beep(); beep();
-        GPSTurn(90, LEFT);
-        msleep(4000L);
-        GPSTurn(90, RIGHT);
-        msleep(4000L);
-        GPSTurn(90, LEFT);
-        msleep(4000L);
-        GPSTurn(90, RIGHT);*/
+      {
         while(!stop_button())
-        {
+          {
             printf("%d:%d %d:%d %d:%d %d:%d\n", startLightPort, analog(startLightPort), leftLinePort, analog(leftLinePort), centerLinePort, analog(centerLinePort), rightLinePort, analog(rightLinePort));
             msleep(100L);
         }
-    }
-    /**if (knobValue == 7) // Hi-jacked for GPS test
-    {
-        implement(180);
-        msleep(3000L);
-        implement(0);
-        msleep(3000L);
-        implement(180);
-        msleep(3000L);
-        implement(0);
-    }*/
-    if(knobValue == 9)
-    {
-        printf("Hit stop to start.\n");
-        while (!stop_button());
-        msleep(500L);
-        driveStraightWaitForLine(centerLineFloorValue);
-        // Line follow test
-        while(1) followLine(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
     }
     
     sleep(3.0); // Let servos finish moving before disabling

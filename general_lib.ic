@@ -35,9 +35,9 @@ void GotoPlunger()
     right = analog(rightLinePort);
     // Back up a little
     driveStraight(ticks(12.0), BACKWARD);
-    GPSTurn(35, LEFT); // turn to 50
+    GPSTurn(30, LEFT); // turn to 50
     driveStraight(ticks(14.0), FORWARD);
-    GPSTurn(45, RIGHT); // turn to 41
+    GPSTurn(40, RIGHT); // turn to 41
     driveStraight(ticks(8.0), FORWARD);
     driveStraightWaitForLine(center);
     GPSTurn(65, LEFT);
@@ -63,7 +63,7 @@ void HitPlunger(int left, int center, int right)
     }
     
 }
-void UpRamp(int left, int center, int right)
+void UpRamp()
 {
     driveStraight(ticks(5.0), BACKWARD);
     GPSTurn(160, RIGHT);
@@ -71,8 +71,8 @@ void UpRamp(int left, int center, int right)
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
     ArmToGem();
-    FollowHeading(ticks(10.0), FORWARD, 138);
-    msleep(2000L);
+    FollowHeading(ticks(8.0), FORWARD, 138);
+    msleep(1000L);
 }
 void GetGem()
 {
@@ -80,18 +80,16 @@ void GetGem()
     msleep(500L);
     driveStraightP(ticks(0.3), BACKWARD, 40);
     msleep(4000L);
-    drive(0, 0);
-    msleep(500L);
 }
 
 int GetGemColor()
 {
     long startTime = mseconds();
     drive(50, 50);
-    while(mseconds() - startTime < 500L)
-    {
+    while(mseconds() - startTime < 750L)
+      {
         if(analog(startLightPort) < RED_THRESHOLD)
-        {
+          {
             printf("RED GEM\n");
             drive(0, 0);
             msleep(1000L);
@@ -106,23 +104,26 @@ int GetGemColor()
 
 void ToBox()
 {
-    FollowHeading(ticks(16.0), BACKWARD, 138);
-    GPSTurn(45, RIGHT);
-    HeadingToX(-65, 51, FORWARD);
+    FollowHeading(ticks(16.5), BACKWARD, 138);
+    GPSTurn(40, RIGHT);
+    HeadingToX(-58, 51, FORWARD);
     GPSTurn(30, RIGHT);
     FollowHeading(ticks(3.0), FORWARD, 6);
     HeadingToLine(analog(centerLinePort), 6, FORWARD);
+    FollowHeading(ticks(0.8), FORWARD, 138);
     GPSTurn(70, LEFT);
 }
 
 void DropOffGem()
 {
     HeadingToX(-30, 92, FORWARD);
+    HeadingToX(-27, 92, BACKWARD);
     implement(IMPLEMENT_DOWN);
     msleep(3000L);
     implement(IMPLEMENT_UP);
     msleep(2000L);
-    HeadingToX(-24, 92, FORWARD);
+    //HeadingToX(-24, 92, FORWARD);
+    HeadingToX(-30, 92, FORWARD);
 }
 
 void ToWall()
@@ -131,12 +132,11 @@ void ToWall()
     GPSTurn(70, RIGHT);
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
-    FollowHeading(ticks(5.0), FORWARD, 6);
+    FollowHeading(ticks(7.0), FORWARD, 6);
 }
 
 void RaiseWall()
 {
-    driveStraightWaitForBump();
     implement(IMPLEMENT_UP);
     driveStraight(ticks(3.0), FORWARD);
 }

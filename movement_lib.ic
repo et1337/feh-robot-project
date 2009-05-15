@@ -109,39 +109,6 @@ void driveStraightWaitForLine(int floorValue)
     }
     drive(0, 0);
 }
-/*void driveStraightToX(int x)
-{
-    int initial;
-    drive(100, 100);
-    setEncoder(leftEncoder, 0);
-    setEncoder(rightEncoder, 0);
-    while(!gps_get_data());
-    initial = gps_x;
-    if (initial < x) {
-        while(gps_x < x)
-          {
-            while(!gps_get_data());
-            if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-              drive(100, 50);
-            else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-              drive(50, 100);
-            else
-            drive(100, 100);
-        }
-    } else {
-        while(gps_x > x)
-          {
-            while(!gps_get_data());
-            if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-              drive(100, 50);
-            else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-              drive(50, 100);
-            else
-            drive(100, 100);
-            drive(0, 0);   
-        }
-    }
-}*/
 void driveStraightToY(int y)
 {
     int initial;
@@ -220,6 +187,7 @@ void HeadingToY(int y, int angle, int direction)
 void HeadingToX(int x, int angle, int direction)
 {
     int initial;
+    printf("Heading to X=%d", x);
     drive(100, 100);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
@@ -261,112 +229,12 @@ void HeadingToX(int x, int angle, int direction)
 }
 
 
-void driveStraightWaitForBump()
-{
-    drive(100, 100);
-    setEncoder(leftEncoder, 0);
-    setEncoder(rightEncoder, 0);
-    while(!(digital(frontLeftSwitch) || digital(frontRightSwitch)))
-      {
-        if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-          drive(100, 50);
-        else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-          drive(50, 100);
-        else
-        drive(100, 100);
-    }
-    drive(0, 0);
-}
-
-void followLine(int leftLineFloorValue, int centerLineFloorValue, int rightLineFloorValue)
-{
-    //int left = (analog(leftLinePort) > leftLineFloorValue + LINE_THRESHOLD);
-    int center = (analog(centerLinePort) > centerLineFloorValue + LINE_THRESHOLD);
-    int right = (analog(rightLinePort) > rightLineFloorValue + LINE_THRESHOLD);
-    
-    /**if(center)
-      {
-        if(right)
-          {
-            drive(100, -100);
-            lineFollowState = LINE_FOLLOW_RIGHT;
-        }
-        else if(left)
-          {
-            drive(-100, 100);
-            lineFollowState = LINE_FOLLOW_LEFT;
-        }
-        else
-        {
-            drive(100, 100);
-        }
-    }
-    else if(left)
-      {
-        drive(-100, 100);
-        lineFollowState = LINE_FOLLOW_LEFT;
-    }
-    else if(right)
-      {
-        drive(100, -100);
-        lineFollowState = LINE_FOLLOW_RIGHT;
-    }
-    else
-      {
-        if(lineFollowState == LINE_FOLLOW_RIGHT)
-          drive(100, 50);
-        else if(lineFollowState == LINE_FOLLOW_LEFT)
-          drive(50, 100);
-    }*/
-    if(center && !right)
-    {
-        drive(-100, 100);
-        lineFollowState = LINE_FOLLOW_LEFT;
-    }
-    else if(right && !center)
-    {
-        drive(100, -100);
-        lineFollowState = LINE_FOLLOW_RIGHT;
-    }
-    else if(right && center)
-      drive(100, 100);
-    else if((!right) && (!center))
-    {
-        if(lineFollowState == LINE_FOLLOW_LEFT)
-          drive(-100, 100);
-        else
-          drive(100, -100);
-    }
-}
-// Follows line until we hit a given GPS Y coordinate
-void FollowLineToY(int y, int left, int center, int right)
-{
-    while(!gps_get_data());
-    while(gps_y < y)
-    {
-        while(!gps_get_data());
-        followLine(left, center, right);
-    }
-    drive(0, 0);
-}
-
-// Follows line until we hit a given GPS X coordinate
-void FollowLineToX(int x, int left, int center, int right)
-{
-    while(!gps_get_data());
-    while(gps_x < x)
-    {
-        while(!gps_get_data());
-        followLine(left, center, right);
-    }
-    drive(0, 0);
-}
 void FollowHeading(int distance, int direction, int angle)
 {
     drive(100 * direction, 100 * direction);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
-    while(getEncoder(leftEncoder) < distance)
+    while(getEncoder(leftEncoder) < distance  && getEncoder(rightEncoder) < distance)
       {
         while(!gps_get_data());
         if(gps_heading < angle - 2)
