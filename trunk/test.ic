@@ -13,6 +13,7 @@ int main()
     int rightLineFloorValue;
     int knobValue;
     int gemColor = BLUE;
+
     
     initServo(implementServo);
     initEncoders(); 
@@ -37,21 +38,22 @@ int main()
             case 1: printf("1: Depress Plunger\n"); break;
             case 2: printf("2: Get Gem\n"); break;
             case 3: printf("3: Box/wall\n"); break;
-            case 4: printf("4: Servo test\n"); break;
+            case 4: printf("4: BackToBase\n"); break;
             case 5: printf("5: Gem color test\n"); break;
             case 6: printf("6: Analog test\n"); break;
             case 7: printf("7: GPS test\n"); break;
             case 8: printf("8: Just up Ramp\n"); break;
+            case 9: printf("9: Servo test\n"); break;
             default: printf("%d: From Start\n", knobValue); knobValue =  0; break;
         }
     }
     while(stop_button());
-    leftLineFloorValue = analog(leftLinePort);
-    centerLineFloorValue = analog(centerLinePort);
-    rightLineFloorValue = analog(rightLinePort);
     if (knobValue == 0) // Everything
       {
         printf("Waiting on light\n");
+        leftLineFloorValue = analog(leftLinePort);
+        centerLineFloorValue = analog(centerLinePort);
+        rightLineFloorValue = analog(rightLinePort);
         startLightValue = analog(startLightPort);
         WaitForStartLight(startLightValue);
         // Save start light value when it's on so we can compare the gem light to it.
@@ -64,20 +66,22 @@ int main()
     } if (knobValue <= 2) {// get gem
         UpRamp();
         GetGem();
-        gemColor = GetGemColor();
+        //gemColor = GetGemColor();
     }
     if(knobValue <= 3) // Box/wall
       {
-        ToBox();
-        DropOffGem();
         gemColor = GetGemColor();
-        ToWall();
-        RaiseWall();
+        BoxWall(gemColor);
+
+    }
+    if(knobValue <= 4) // Box/wall
+      {
+        BackToBase();
     }
     if (knobValue == 8)
-      {
+    {
         while(1)
-          {
+        {
             printf("Starting Up the Ramp Test\n");
             while (!stop_button());
             UpRamp();
@@ -88,7 +92,7 @@ int main()
     if (knobValue == 7) { // GPS Test
         printf("Waiting for GPS\n");
         while(1)
-          {
+        {
             // Wait for data
             
             while(!gps_get_data());
@@ -96,9 +100,9 @@ int main()
             printf("%d %d %d %d\n", gps_x, gps_y, gps_heading, gps_debris);
         }
     }
-    if (knobValue == 4) {// Servo test
+    if (knobValue == 9) {// Servo test
         while(1)
-          {
+        {
             sleep(0.1);
             implement((int)((((float)knob()) / 255.0) * 180.0));
             printf("Servo: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
