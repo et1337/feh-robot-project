@@ -15,47 +15,47 @@ void GPSTurn(int angle, int dir)
 {
     int initial, final;
     // Wait for data
-    printf("Turning...\n");
+    //printf("Turning...\n");
     while(!gps_get_data());
     initial = gps_heading;
-    printf("Got data, initial = %d\n", initial);
+    //printf("Got data, initial = %d\n", initial);
     if (dir == LEFT) {
         drive(-100, 100);
         if (initial + angle > 180)
           {
             while (gps_heading > initial - 1) {
-                printf("%d First\n", gps_heading);
+                //printf("%d First\n", gps_heading);
                 while(!gps_get_data());
             }
             while (gps_heading < (initial + angle - 180))
               {
                 while(!gps_get_data());
-                printf("%d Second\n", gps_heading);
+                //printf("%d Second\n", gps_heading);
             }
         } else
           while (gps_heading < initial + angle)
             {
               while (!gps_get_data());
-              printf("heading=%d\n",gps_heading);
+              //printf("heading=%d\n",gps_heading);
           }
     } else if (dir == RIGHT) {
         drive(100, -100);
         if (initial - angle < 0)
           {
             while (gps_heading < initial + 1) {
-                printf("%d First\n", gps_heading);
+                //printf("%d First\n", gps_heading);
                 while(!gps_get_data());
             }
             while (gps_heading < (initial - angle + 180))
               {
                 while(!gps_get_data());
-                printf("%d Second\n", gps_heading);
+                //printf("%d Second\n", gps_heading);
             }
         } else
           while (gps_heading > initial - angle)
             {
               while (!gps_get_data());
-              printf("heading=%d\n",gps_heading);
+              //printf("heading=%d\n",gps_heading);
           }
     }
     drive(0,0);
@@ -187,7 +187,7 @@ void HeadingToY(int y, int angle, int direction)
 void HeadingToX(int x, int angle, int direction)
 {
     int initial;
-    printf("Heading to X=%d", x);
+    //printf("Heading to X=%d", x);
     drive(100, 100);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
@@ -275,23 +275,23 @@ void TurnToHeading(int angle)
 {
     int initial;
     // Wait for data
-    printf("Turning...\n");
+    //printf("Turning...\n");
     while(!gps_get_data());
     initial = gps_heading;
-    printf("Got data, initial = %d\n", initial);
+    //printf("Got data, initial = %d\n", initial);
     if (initial < angle) {
         drive(-100, 100);
         while (gps_heading < angle)
           {
             while (!gps_get_data());
-            printf("heading=%d\n",gps_heading);
+            //printf("heading=%d\n",gps_heading);
         }
     } else if (initial > angle) {
         drive(100, -100);
         while (gps_heading > angle)
           {
             while (!gps_get_data());
-            printf("heading=%d\n",gps_heading);
+            //printf("heading=%d\n",gps_heading);
         }
     }
     drive(0,0);

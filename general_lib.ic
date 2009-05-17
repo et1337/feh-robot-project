@@ -3,6 +3,7 @@
 #include "movement_lib.ic"
 #include "implement_lib.ic"
 
+
 void WaitForStartLight(int startLightValue)
 {
     while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD && !stop_button());
@@ -15,7 +16,8 @@ void ArmToGem()
 void DropOffDynamite()
 {
     // Drive down the ramp
-    driveStraight(ticks(27.5), FORWARD);
+    // Originally 27.5
+    driveStraight(ticks(27.0), FORWARD);
     // Turn toward dynamite dropbox
     GPSTurn(16, LEFT);
     FollowHeading(ticks(10.0), FORWARD, 43);    
@@ -102,49 +104,84 @@ int GetGemColor()
     return BLUE;
 }
 
-void ToBox()
+void ToBoxes()
 {
     FollowHeading(ticks(16.5), BACKWARD, 138);
-    GPSTurn(40, RIGHT);
-    HeadingToX(-58, 51, FORWARD);
+    GPSTurn(58, RIGHT);
+    HeadingToX(-58, 48, FORWARD);
     GPSTurn(30, RIGHT);
-    FollowHeading(ticks(3.0), FORWARD, 6);
-    HeadingToLine(analog(centerLinePort), 6, FORWARD);
-    FollowHeading(ticks(0.8), FORWARD, 138);
-    GPSTurn(70, LEFT);
+    FollowHeading(ticks(3.0), FORWARD, 8);
+}
+
+void NextBox()
+{
+    HeadingToLine(analog(centerLinePort), 8, FORWARD);
+    FollowHeading(ticks(0.8), FORWARD, 8);
+    GPSTurn(60, LEFT);
+    HeadingToX(-30, 86, FORWARD);
 }
 
 void DropOffGem()
 {
-    HeadingToX(-30, 92, FORWARD);
-    HeadingToX(-27, 92, BACKWARD);
+    //HeadingToX(-30, 92, BACKWARD);
+    FollowHeading(ticks(1.5), BACKWARD, 92);
     implement(IMPLEMENT_DOWN);
     msleep(3000L);
     implement(IMPLEMENT_UP);
     msleep(2000L);
-    //HeadingToX(-24, 92, FORWARD);
-    HeadingToX(-30, 92, FORWARD);
 }
 
-void ToWall()
+void ToWall(int checkedTwice)
 {
     driveStraight(ticks(3.0), BACKWARD);
     GPSTurn(70, RIGHT);
+    if (checkedTwice)
+      FollowHeading(ticks(5.0), BACKWARD, 6);
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
-    FollowHeading(ticks(7.0), FORWARD, 6);
+    if (checkedTwice) FollowHeading(ticks(5.0), FORWARD, 6);
+    FollowHeading(ticks(5.0), FORWARD, 6);
 }
 
 void RaiseWall()
 {
-    implement(IMPLEMENT_UP);
-    driveStraight(ticks(3.0), FORWARD);
+    driveStraightP(ticks(0.25), BACKWARD, 40);
+    implement(IMPLEMENT_UP); 
+    msleep(250L);
+    driveStraightP(ticks(5.0), FORWARD, 60);
 }
 
 void BackToBase()
 {
-    driveStraight(ticks(1.0), BACKWARD);
-    GPSTurn(180, LEFT);
-    driveStraight(ticks(10.0), FORWARD);
-    GPSTurn(90, RIGHT);
+    driveStraight(ticks(2.0), BACKWARD);
+    HeadingToY(100, 6, BACKWARD);
+    GPSTurn(90, LEFT);
+    HeadingToX(18, 90, FORWARD);
+    GPSTurn(73, RIGHT);
+    HeadingToY(45, 4, FORWARD);
+    FollowHeading(ticks(7.0), FORWARD, 4);
+
+}
+void BoxWall(int gemColor)
+{ 
+    int checkedTwice = 0;
+    int box1Color = BLUE;
+    printf("ToBoxes()\n");
+    ToBoxes();
+    printf("NextBox()\n");
+    NextBox();
+    box1Color = GetGemColor();
+    if(box1Color != gemColor)
+      {
+        checkedTwice = 1;
+        HeadingToX(-35, 88, BACKWARD);
+        GPSTurn(65, RIGHT);
+        NextBox();
+    }
+    printf("DropOffGem()\n");
+    DropOffGem();
+    printf("ToWall()\n");
+    ToWall(checkedTwice);
+    printf("RaiseWall()\n");
+    RaiseWall();   
 }
