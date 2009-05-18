@@ -11,8 +11,8 @@ void initServo(int port)
 {
     exp_servo_enable();
     
-    exp_servo_min[port] = 3823;
-    exp_servo_max[port] = 4058;
+    exp_servo_min[port] = 392;
+    exp_servo_max[port] = 4196;
 }
 void implement(int angle)
 {
