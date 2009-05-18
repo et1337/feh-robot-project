@@ -8,11 +8,7 @@ void WaitForStartLight(int startLightValue)
 {
     while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD && !stop_button());
 }
-void ArmToGem()
-{
-    implement(IMPLEMENT_GEM);
-    msleep(2000L);
-}
+
 void DropOffDynamite()
 {
     // Drive down the ramp
@@ -25,9 +21,10 @@ void DropOffDynamite()
     driveStraightToY(175);
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
-    sleep(4.0);
+    msleep(1000L);
+    driveStraight(ticks(1.0), BACKWARD);
     implement(IMPLEMENT_UP);
-    sleep(1.0);
+    msleep(1000L);
 }
 void GotoPlunger()
 {
@@ -50,16 +47,15 @@ void HitPlunger(int left, int center, int right)
     implement(IMPLEMENT_UP);
     HeadingToY(190, 138, FORWARD);
     implement(IMPLEMENT_DOWN);
-    msleep(1500L);
+    msleep(500L);
     implement(IMPLEMENT_UP);
-    msleep(2000L);
     while (!gps_debris) {
         if (count%2 == 0) driveStraight(ticks(1.0), FORWARD);
         if (count%2 == 1) driveStraight(ticks(1.0), BACKWARD);
-        implement(IMPLEMENT_DOWN);
         msleep(1500L);
+        implement(IMPLEMENT_PLUNGER);
+        msleep(500L);
         implement(IMPLEMENT_UP);
-        msleep(2000L);
         count++;
         while(!gps_get_data());
     }
@@ -72,35 +68,55 @@ void UpRamp()
     TurnToHeading(156);
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
-    ArmToGem();
-    FollowHeading(ticks(8.0), FORWARD, 138);
+    implement(IMPLEMENT_GEM);
     msleep(1000L);
+    FollowHeading(ticks(8.5), FORWARD, 138);
+    msleep(200L);
 }
 void GetGem()
 {
     implement(IMPLEMENT_UP);
-    msleep(500L);
+    msleep(400L);
     driveStraightP(ticks(0.3), BACKWARD, 40);
     msleep(4000L);
 }
 
 int GetGemColor()
 {
+    drive(70, 70);
+    if(GemColorHelper(600L) == RED)
+      return RED;
+    drive(100, -100);
+    if(GemColorHelper(300L) == RED)
+    {
+        drive(-100, 100);
+        msleep(300L);
+        drive(0, 0);
+        return RED;
+    }
+    drive(-100, 100);
+    if(GemColorHelper(600L) == RED)
+      return RED;
+    drive(100, -100);
+    msleep(300L);
+    drive(0, 0);
+    printf("BLUE GEM\n");
+    return BLUE;
+}
+
+int GemColorHelper(long time)
+{
     long startTime = mseconds();
-    drive(50, 50);
-    while(mseconds() - startTime < 750L)
-      {
+    while(mseconds() - startTime < time)
+    {
         if(analog(startLightPort) < RED_THRESHOLD)
-          {
-            printf("RED GEM\n");
-            drive(0, 0);
-            msleep(1000L);
-            return RED;
+        {
+           printf("RED GEM\n");
+           drive(0, 0);
+           return RED;
         }
     }
-    printf("BLUE GEM\n");
     drive(0, 0);
-    msleep(1000L);
     return BLUE;
 }
 
@@ -110,7 +126,7 @@ void ToBoxes()
     GPSTurn(58, RIGHT);
     HeadingToX(-58, 48, FORWARD);
     GPSTurn(30, RIGHT);
-    FollowHeading(ticks(3.0), FORWARD, 8);
+    FollowHeading(ticks(3.0), FORWARD, 10);
 }
 
 void NextBox()
@@ -160,7 +176,7 @@ void BackToBase()
     GPSTurn(73, RIGHT);
     HeadingToY(45, 4, FORWARD);
     FollowHeading(ticks(7.0), FORWARD, 4);
-
+    
 }
 void BoxWall(int gemColor)
 { 
@@ -176,6 +192,7 @@ void BoxWall(int gemColor)
         checkedTwice = 1;
         HeadingToX(-35, 88, BACKWARD);
         GPSTurn(65, RIGHT);
+        driveStraight(ticks(0.5), BACKWARD);
         NextBox();
     }
     printf("DropOffGem()\n");

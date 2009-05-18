@@ -13,7 +13,7 @@ int main()
     int rightLineFloorValue;
     int knobValue;
     int gemColor = BLUE;
-
+    
     
     initServo(implementServo);
     initEncoders(); 
@@ -62,37 +62,39 @@ int main()
     } if (knobValue <= 1)  {// Press plunger
         GotoPlunger();
         HitPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-        sleep(2.0);  // wait for ramp
+        sleep(1.0);  // wait for ramp
     } if (knobValue <= 2) {// get gem
         UpRamp();
         GetGem();
         //gemColor = GetGemColor();
     }
     if(knobValue <= 3) // Box/wall
-      {
+    {
         gemColor = GetGemColor();
+        msleep(1000L);
         BoxWall(gemColor);
-
+        
     }
-    if(knobValue <= 4) // Box/wall
+    if(knobValue <= 4) // Back to base
       {
         BackToBase();
     }
     if (knobValue == 8)
-    {
+      {
         while(1)
-        {
+          {
             printf("Starting Up the Ramp Test\n");
             while (!stop_button());
             UpRamp();
             GetGem();
             gemColor = GetGemColor();
+            msleep(1000L);
         }
     }
     if (knobValue == 7) { // GPS Test
         printf("Waiting for GPS\n");
         while(1)
-        {
+          {
             // Wait for data
             
             while(!gps_get_data());
@@ -102,7 +104,7 @@ int main()
     }
     if (knobValue == 9) {// Servo test
         while(1)
-        {
+          {
             sleep(0.1);
             implement((int)((((float)knob()) / 255.0) * 180.0));
             printf("Servo: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
