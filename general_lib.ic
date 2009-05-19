@@ -77,29 +77,24 @@ void GetGem()
 {
     implement(IMPLEMENT_UP);
     msleep(400L);
-    driveStraightP(ticks(0.3), BACKWARD, 40);
+    driveStraightP(ticks(0.35), BACKWARD, 40);
     msleep(4000L);
 }
 
 int GetGemColor()
 {
     drive(70, 70);
-    if(GemColorHelper(600L) == RED)
+    if(GemColorHelper(500L) == RED)
       return RED;
+    drive(-70, -70);
+    msleep(50L);
+    drive(0, 0);
     drive(100, -100);
     if(GemColorHelper(300L) == RED)
-    {
-        drive(-100, 100);
-        msleep(300L);
-        drive(0, 0);
         return RED;
-    }
     drive(-100, 100);
     if(GemColorHelper(600L) == RED)
       return RED;
-    drive(100, -100);
-    msleep(300L);
-    drive(0, 0);
     printf("BLUE GEM\n");
     return BLUE;
 }
@@ -108,12 +103,12 @@ int GemColorHelper(long time)
 {
     long startTime = mseconds();
     while(mseconds() - startTime < time)
-    {
+      {
         if(analog(startLightPort) < RED_THRESHOLD)
-        {
-           printf("RED GEM\n");
-           drive(0, 0);
-           return RED;
+          {
+            printf("RED GEM\n");
+            drive(0, 0);
+            return RED;
         }
     }
     drive(0, 0);
@@ -187,6 +182,7 @@ void BoxWall(int gemColor)
     printf("NextBox()\n");
     NextBox();
     box1Color = GetGemColor();
+    GPSTurnTo(88);
     if(box1Color != gemColor)
       {
         checkedTwice = 1;

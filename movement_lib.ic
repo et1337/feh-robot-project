@@ -60,6 +60,38 @@ void GPSTurn(int angle, int dir)
     }
     drive(0,0);
 }
+void GPSTurnTo(int angle)
+{
+    while(!gps_get_data());
+    while(gps_heading < angle - 1 && gps_heading > angle + 1)
+    {
+        while(!gps_get_data());
+        if(gps_heading < angle - 6)
+        {
+            drive(-100, 100);
+            msleep(50L);
+            drive(0, 0);
+        } else if(gps_heading > angle + 6)
+        {
+            drive(100, -100);
+            msleep(50L);
+            drive(0, 0);
+        }
+        else if(gps_heading < angle)
+        {
+            drive(-100, 100);
+            msleep(25L);
+            drive(0, 0);
+        }
+        else if(gps_heading > angle + 1)
+        {
+            drive(100, -100);
+            msleep(25L);
+            drive(0, 0);
+        }
+        msleep(100L);
+    }
+}
 void driveStraight(int distance, int direction)
 {
     drive(100 * direction, 100 * direction);
