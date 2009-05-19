@@ -69,7 +69,7 @@ int main()
         //gemColor = GetGemColor();
     }
     if(knobValue <= 3) // Box/wall
-    {
+      {
         gemColor = GetGemColor();
         msleep(1000L);
         BoxWall(gemColor);
@@ -88,6 +88,7 @@ int main()
             UpRamp();
             GetGem();
             gemColor = GetGemColor();
+            GPSTurnTo(138);
             msleep(1000L);
         }
     }
