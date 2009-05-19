@@ -69,7 +69,7 @@ void UpRamp()
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
     implement(IMPLEMENT_GEM);
-    msleep(1000L);
+    msleep(500L);
     FollowHeading(ticks(8.5), FORWARD, 138);
     msleep(200L);
 }
@@ -84,7 +84,7 @@ void GetGem()
 int GetGemColor()
 {
     drive(70, 70);
-    if(GemColorHelper(500L) == RED)
+    if(GemColorHelper(400L) == RED)
       return RED;
     drive(-70, -70);
     msleep(50L);
@@ -118,10 +118,10 @@ int GemColorHelper(long time)
 void ToBoxes()
 {
     FollowHeading(ticks(16.5), BACKWARD, 138);
-    GPSTurn(58, RIGHT);
-    HeadingToX(-58, 48, FORWARD);
-    GPSTurn(30, RIGHT);
-    FollowHeading(ticks(3.0), FORWARD, 10);
+    GPSTurn(59, RIGHT);
+    HeadingToX(-55, 47, FORWARD);
+    GPSTurn(28, RIGHT);
+    FollowHeading(ticks(3.0), FORWARD, 12);
 }
 
 void NextBox()
@@ -135,7 +135,7 @@ void NextBox()
 void DropOffGem()
 {
     //HeadingToX(-30, 92, BACKWARD);
-    FollowHeading(ticks(1.5), BACKWARD, 92);
+    FollowHeading(ticks(1.3), BACKWARD, 92);
     implement(IMPLEMENT_DOWN);
     msleep(3000L);
     implement(IMPLEMENT_UP);
@@ -156,7 +156,7 @@ void ToWall(int checkedTwice)
 
 void RaiseWall()
 {
-    driveStraightP(ticks(0.25), BACKWARD, 40);
+    driveStraightP(ticks(0.4), BACKWARD, 40);
     implement(IMPLEMENT_UP); 
     msleep(250L);
     driveStraightP(ticks(5.0), FORWARD, 60);
@@ -165,8 +165,10 @@ void RaiseWall()
 void BackToBase()
 {
     driveStraight(ticks(2.0), BACKWARD);
-    HeadingToY(100, 6, BACKWARD);
-    GPSTurn(90, LEFT);
+    HeadingToY(122, 6, BACKWARD);
+    drive(-100, 100);
+    msleep(400L);
+    GPSTurnTo(90);
     HeadingToX(18, 90, FORWARD);
     GPSTurn(73, RIGHT);
     HeadingToY(45, 4, FORWARD);
@@ -174,7 +176,7 @@ void BackToBase()
     
 }
 void BoxWall(int gemColor)
-{ 
+{
     int checkedTwice = 0;
     int box1Color = BLUE;
     printf("ToBoxes()\n");
@@ -182,13 +184,13 @@ void BoxWall(int gemColor)
     printf("NextBox()\n");
     NextBox();
     box1Color = GetGemColor();
-    GPSTurnTo(88);
+    GPSTurnTo(86);
     if(box1Color != gemColor)
-      {
+    {
         checkedTwice = 1;
         HeadingToX(-35, 88, BACKWARD);
         GPSTurn(65, RIGHT);
-        driveStraight(ticks(0.5), BACKWARD);
+        driveStraight(ticks(0.6), BACKWARD);
         NextBox();
     }
     printf("DropOffGem()\n");

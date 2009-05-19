@@ -42,7 +42,7 @@ int main()
             case 5: printf("5: Gem color test\n"); break;
             case 6: printf("6: Analog test\n"); break;
             case 7: printf("7: GPS test\n"); break;
-            case 8: printf("8: Just up Ramp\n"); break;
+            case 8: printf("8: GPSTurnTo test\n"); break;
             case 9: printf("9: Servo test\n"); break;
             default: printf("%d: From Start\n", knobValue); knobValue =  0; break;
         }
@@ -72,6 +72,7 @@ int main()
       {
         gemColor = GetGemColor();
         msleep(1000L);
+        GPSTurnTo(138);
         BoxWall(gemColor);
         
     }
@@ -80,16 +81,15 @@ int main()
         BackToBase();
     }
     if (knobValue == 8)
-      {
+    {
         while(1)
-          {
-            printf("Starting Up the Ramp Test\n");
-            while (!stop_button());
-            UpRamp();
-            GetGem();
-            gemColor = GetGemColor();
-            GPSTurnTo(138);
-            msleep(1000L);
+        {
+            while(!stop_button())
+            {
+                printf("GPS Turn To: %d\n", (int)((((float)knob()) / 255.0) * 180.0));
+                msleep(100L);
+            }
+            GPSTurnTo((int)((((float)knob()) / 255.0) * 180.0));
         }
     }
     if (knobValue == 7) { // GPS Test
