@@ -39,7 +39,7 @@ int main()
             case 2: printf("2: Get Gem\n"); break;
             case 3: printf("3: Box/wall\n"); break;
             case 4: printf("4: BackToBase\n"); break;
-            case 5: printf("5: Gem color test\n"); break;
+            case 5: printf("5: ZOMG! NOTHING HERE!\n"); break;
             case 6: printf("6: Analog test\n"); break;
             case 7: printf("7: GPS test\n"); break;
             case 8: printf("8: GPSTurnTo test\n"); break;
@@ -112,25 +112,14 @@ int main()
         }
     }
     if (knobValue == 5)
-      {// Formerly gem servo test, now gem color test
-        while(!stop_button())
-          {
-            if(analog(startLightPort) < startLightValue - RED_THRESHOLD)
-              {
-                printf("RED GEM\n");
-            }
-            else
-              {
-                printf("BLUE GEM\n");
-            }
-            msleep(100L);
-        }
+    {
+        // ZOMG! NOTHING HERE!
     }
     if (knobValue == 6) // Formerly GPS turn test; now hi-jacked for analog sensor test. HA!
-      {
+    {
         while(!stop_button())
-          {
-            printf("%d:%d %d:%d %d:%d %d:%d\n", startLightPort, analog(startLightPort), leftLinePort, analog(leftLinePort), centerLinePort, analog(centerLinePort), rightLinePort, analog(rightLinePort));
+        {
+            printf("%d:%d %d:%d %d:%d %d:%d\n", startLightPort, analog(startLightPort), centerLinePort, analog(centerLinePort), leftEncoder, analog(leftEncoder), rightEncoder, analog(rightEncoder));
             msleep(100L);
         }
     }

@@ -4,11 +4,11 @@
 
 void initEncoders()
 {
-    encoder2_low_threshold = 25;
-    encoder2_high_threshold = 30;
+    encoder2_low_threshold = 28;
+    encoder2_high_threshold = 32;
     
-    encoder3_low_threshold = 25;
-    encoder3_high_threshold = 30;   
+    encoder3_low_threshold = 28;
+    encoder3_high_threshold = 32;   
 }
 void setEncoder(int port, int ticks)
 {
