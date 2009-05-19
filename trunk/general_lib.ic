@@ -91,7 +91,7 @@ int GetGemColor()
     drive(0, 0);
     drive(100, -100);
     if(GemColorHelper(300L) == RED)
-        return RED;
+      return RED;
     drive(-100, 100);
     if(GemColorHelper(600L) == RED)
       return RED;
@@ -120,16 +120,24 @@ void ToBoxes()
     FollowHeading(ticks(16.5), BACKWARD, 138);
     GPSTurn(59, RIGHT);
     HeadingToX(-55, 47, FORWARD);
-    GPSTurn(28, RIGHT);
+    drive(100, -100);
+    msleep(200L);
+    GPSTurnTo(12);
     FollowHeading(ticks(3.0), FORWARD, 12);
 }
 
-void NextBox()
+void NextBox(int firstBox)
 {
-    HeadingToLine(analog(centerLinePort), 8, FORWARD);
-    FollowHeading(ticks(0.8), FORWARD, 8);
-    GPSTurn(60, LEFT);
-    HeadingToX(-30, 86, FORWARD);
+    if(firstBox)
+      HeadingToLine(analog(centerLinePort), 8, FORWARD);
+    else
+      HeadingToLine(analog(centerLinePort), 45, FORWARD);
+    driveStraight(ticks(0.8), FORWARD);
+    if(firstBox)
+      GPSTurn(70, LEFT);
+    else
+      GPSTurn(40, LEFT);
+    HeadingToX(-30, 88, FORWARD);
 }
 
 void DropOffGem()
@@ -157,7 +165,7 @@ void ToWall(int checkedTwice)
 void RaiseWall()
 {
     driveStraightP(ticks(0.4), BACKWARD, 40);
-    implement(IMPLEMENT_UP); 
+    implement(IMPLEMENT_UP);
     msleep(250L);
     driveStraightP(ticks(5.0), FORWARD, 60);
 }
@@ -182,16 +190,16 @@ void BoxWall(int gemColor)
     printf("ToBoxes()\n");
     ToBoxes();
     printf("NextBox()\n");
-    NextBox();
+    NextBox(checkedTwice);
     box1Color = GetGemColor();
-    GPSTurnTo(86);
+    GPSTurnTo(88);
     if(box1Color != gemColor)
     {
         checkedTwice = 1;
-        HeadingToX(-35, 88, BACKWARD);
-        GPSTurn(65, RIGHT);
+        HeadingToX(-38, 88, BACKWARD);
+        GPSTurn(45, RIGHT);
         driveStraight(ticks(0.6), BACKWARD);
-        NextBox();
+        NextBox(checkedTwice);
     }
     printf("DropOffGem()\n");
     DropOffGem();
