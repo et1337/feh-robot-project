@@ -13,7 +13,7 @@ void DropOffDynamite()
 {
     // Drive down the ramp
     // Originally 27.5
-    driveStraight(ticks(28.4), FORWARD);
+    driveStraight(ticks(26.5), FORWARD);
     // Turn toward dynamite dropbox
     GPSTurn(16, LEFT);
     FollowHeading(ticks(10.0), FORWARD, 43);    
