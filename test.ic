@@ -112,13 +112,13 @@ int main()
         }
     }
     if (knobValue == 5)
-    {
+      {
         // ZOMG! NOTHING HERE!
     }
     if (knobValue == 6) // Formerly GPS turn test; now hi-jacked for analog sensor test. HA!
-    {
+      {
         while(!stop_button())
-        {
+          {
             printf("%d:%d %d:%d %d:%d %d:%d\n", startLightPort, analog(startLightPort), centerLinePort, analog(centerLinePort), leftEncoder, analog(leftEncoder), rightEncoder, analog(rightEncoder));
             msleep(100L);
         }
