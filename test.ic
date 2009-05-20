@@ -62,7 +62,7 @@ int main()
     } if (knobValue <= 1)  {// Press plunger
         GotoPlunger();
         HitPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
-        sleep(1.0);  // wait for ramp
+        sleep(0.5);  // wait for ramp
     } if (knobValue <= 2) {// get gem
         UpRamp();
         GetGem();
@@ -71,7 +71,6 @@ int main()
     if(knobValue <= 3) // Box/wall
       {
         gemColor = GetGemColor();
-        msleep(1000L);
         GPSTurnTo(138);
         BoxWall(gemColor);
         
