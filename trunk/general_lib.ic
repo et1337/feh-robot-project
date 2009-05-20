@@ -13,7 +13,7 @@ void DropOffDynamite()
 {
     // Drive down the ramp
     // Originally 27.5
-    driveStraight(ticks(27.0), FORWARD);
+    driveStraight(ticks(28.0), FORWARD);
     // Turn toward dynamite dropbox
     GPSTurn(16, LEFT);
     FollowHeading(ticks(10.0), FORWARD, 43);    
@@ -34,12 +34,16 @@ void GotoPlunger()
     right = analog(rightLinePort);
     // Back up a little
     driveStraight(ticks(12.0), BACKWARD);
-    GPSTurn(30, LEFT); // turn to 50
+    GPSTurn(20, LEFT);
+    GPSTurnTo(90);
     driveStraight(ticks(14.0), FORWARD);
     GPSTurn(40, RIGHT); // turn to 41
     driveStraight(ticks(8.0), FORWARD);
     driveStraightWaitForLine(center);
-    GPSTurn(65, LEFT);
+    driveStraight(ticks(0.8), FORWARD);
+    drive(-100, 100);
+    msleep(500L);
+    GPSTurnTo(138);
 }
 void HitPlunger(int left, int center, int right)
 {
@@ -194,11 +198,13 @@ void BoxWall(int gemColor)
     box1Color = GetGemColor();
     GPSTurnTo(88);
     if(box1Color != gemColor)
-      {
+    {
         checkedTwice = 1;
         HeadingToX(-38, 90, BACKWARD);
-        GPSTurn(45, RIGHT);
+        GPSTurn(35, RIGHT);
+        GPSTurnTo(40);
         driveStraight(ticks(0.6), BACKWARD);
+        HeadingToLine(analog(centerLinePort), 40, FORWARD);
         NextBox(checkedTwice);
     }
     printf("DropOffGem()\n");
