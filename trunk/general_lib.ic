@@ -40,7 +40,7 @@ void GotoPlunger()
     GPSTurn(40, RIGHT); // turn to 41
     driveStraight(ticks(8.0), FORWARD);
     driveStraightWaitForLine(center);
-    driveStraight(ticks(1.2), FORWARD);
+    driveStraight(ticks(1.4), FORWARD);
     drive(-100, 100);
     msleep(700L);
     GPSTurnTo(138);
@@ -133,9 +133,15 @@ void ToBoxes()
 void NextBox(int firstBox)
 {
     if(firstBox)
+    {
+      FollowHeading(ticks(1.4), 2, FORWARD);
       HeadingToLine(analog(centerLinePort), 2, FORWARD);
+    }                
     else
+    {  
+      FollowHeading(ticks(1.4), 4, FORWARD);
       HeadingToLine(analog(centerLinePort), 4, FORWARD);
+    }    
     driveStraight(ticks(0.7), FORWARD);
     drive(-100, 100);
     msleep(300L);
@@ -201,7 +207,7 @@ void BoxWall(int gemColor)
     {
         checkedTwice = 1;
         HeadingToX(-39, 90, BACKWARD);
-        GPSTurn(70, RIGHT);
+        GPSTurn(40, RIGHT);
         GPSTurnTo(4);
         driveStraight(ticks(2.0), BACKWARD);
         HeadingToLine(analog(centerLinePort), 10, FORWARD);
