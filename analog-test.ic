@@ -1,8 +1,0 @@
-int main()
-{
-    while(1)
-      {
-        printf("%d %d %d\n", analog(16), analog(18), analog(20));
-        msleep(100L);
-    }
-}
