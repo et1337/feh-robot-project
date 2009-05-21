@@ -55,6 +55,7 @@ int main()
         centerLineFloorValue = analog(centerLinePort);
         rightLineFloorValue = analog(rightLinePort);
         startLightValue = analog(startLightPort);
+        centerLine = centerLineFloorValue;
         WaitForStartLight(startLightValue);
         // Save start light value when it's on so we can compare the gem light to it.
         startLightValue = analog(startLightPort);
