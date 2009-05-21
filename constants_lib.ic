@@ -39,9 +39,13 @@
 
 // Motor/servo constants
 #define IMPLEMENT_UP 0
+#define IMPLEMENT_WALL 50
 #define IMPLEMENT_PLUNGER 90
 #define IMPLEMENT_DOWN 180
-#define IMPLEMENT_GEM 130
+#define IMPLEMENT_GEM 144
+
+int speed = 100;
+int centerLine;
 
 
 

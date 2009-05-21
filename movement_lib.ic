@@ -11,6 +11,12 @@ void drive(int left, int right)
     motor(leftMotor, left);
     motor(rightMotor, right);
 }
+void driveT(int left, int right, long time)
+{
+    drive(left, right);
+    msleep(time);
+    drive(0, 0);
+}
 void GPSTurn(int angle, int dir)
 {
     int initial, final;
@@ -20,7 +26,7 @@ void GPSTurn(int angle, int dir)
     initial = gps_heading;
     //printf("Got data, initial = %d\n", initial);
     if (dir == LEFT) {
-        drive(-100, 100);
+        drive(-speed, speed);
         if (initial + angle > 180)
           {
             while (gps_heading > initial - 1) {
@@ -39,7 +45,7 @@ void GPSTurn(int angle, int dir)
               //printf("heading=%d\n",gps_heading);
           }
     } else if (dir == RIGHT) {
-        drive(100, -100);
+        drive(speed, -speed);
         if (initial - angle < 0)
           {
             while (gps_heading < initial + 1) {
@@ -65,27 +71,27 @@ void GPSTurnTo(int angle)
     long startTime = mseconds();
     while(!gps_get_data());
     while((gps_heading - angle > 1 || gps_heading - angle < -1) && (mseconds() - startTime < 4000L))
-    {
+      {
         if(gps_heading < angle - 7)
-        {
-            drive(-100, 100);
+          {
+            drive(-speed, speed);
             msleep(50L);
             drive(0, 0);
         } else if(gps_heading > angle + 7)
-        {
-            drive(100, -100);
+          {
+            drive(speed, -speed);
             msleep(50L);
             drive(0, 0);
         }
         else if(gps_heading < angle)
-        {
-            drive(-100, 100);
+          {
+            drive(-speed, speed);
             msleep(25L);
             drive(0, 0);
         }
         else if(gps_heading > angle + 1)
-        {
-            drive(100, -100);
+          {
+            drive(speed, -speed);
             msleep(25L);
             drive(0, 0);
         }
@@ -95,17 +101,17 @@ void GPSTurnTo(int angle)
 }
 void driveStraight(int distance, int direction)
 {
-    drive(100 * direction, 100 * direction);
+    drive(speed * direction, speed * direction);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(getEncoder(leftEncoder) < distance)
       {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-          drive(100 * direction, 50 * direction);
+          drive(speed * direction, speed/2 * direction);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-          drive(50 * direction, 100 * direction);
+          drive(speed/2 * direction, speed * direction);
         else
-        drive(100 * direction, 100 * direction);
+        drive(speed * direction, speed * direction);
     }
     drive(0, 0);
 }
@@ -128,24 +134,24 @@ void driveStraightP(int distance, int direction, int power)
 
 void driveStraightWaitForLine(int floorValue)
 {
-    drive(100, 100);
+    drive(speed, speed);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while((analog(centerLinePort) < floorValue + LINE_THRESHOLD))
       {
         if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-          drive(100, 50);
+          drive(speed, speed/2);
         else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-          drive(50, 100);
+          drive((int)speed/2, speed);
         else
-        drive(100, 100);
+        drive(speed, speed);
     }
     drive(0, 0);
 }
 void driveStraightToY(int y)
 {
     int initial;
-    drive(100, 100);
+    drive(speed, speed);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(!gps_get_data());
@@ -155,22 +161,22 @@ void driveStraightToY(int y)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-              drive(100, 50);
+              drive(speed, speed/2);
             else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-              drive(50, 100);
+              drive(speed/2, speed);
             else
-            drive(100, 100);
+            drive(speed, speed);
         }
     } else {
         while(gps_y > y)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-              drive(100, 50);
+              drive(speed, speed/2);
             else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-              drive(50, 100);
+              drive(speed/2, speed);
             else
-            drive(100, 100);
+            drive(speed, speed);
         }
     }
     drive(0, 0);   
@@ -178,7 +184,7 @@ void driveStraightToY(int y)
 void HeadingToY(int y, int angle, int direction)
 {
     int initial;
-    drive(100, 100);
+    drive(speed, speed);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(!gps_get_data());
@@ -188,15 +194,15 @@ void HeadingToY(int y, int angle, int direction)
           {
             while(!gps_get_data());
             if(gps_heading < angle - 2)
-              drive(50 * direction, 100 * direction);
+              drive(speed/2 * direction, speed * direction);
             else if(gps_heading < angle - 1)
-              drive(80 * direction, 100 * direction);
+              drive((speed*4/5) * direction, speed * direction);
             else if(gps_heading > angle + 2)
-              drive(100 * direction, 50 * direction);
+              drive(speed * direction, speed/2 * direction);
             else if(gps_heading > angle + 1)
-              drive(100 * direction, 80 * direction);
+              drive(speed * direction, speed*4/5 * direction);
             else
-            drive(100 * direction, 100 * direction);
+            drive(speed * direction, speed * direction);
             
         }
     } else {
@@ -204,15 +210,15 @@ void HeadingToY(int y, int angle, int direction)
           {
             while(!gps_get_data());
             if(gps_heading < angle - 2)
-              drive(50 * direction, 100 * direction);
+              drive(speed/2 * direction, speed * direction);
             else if(gps_heading < angle - 1)
-              drive(80 * direction, 100 * direction);
+              drive(speed*4/5 * direction, speed * direction);
             else if(gps_heading > angle + 2)
-              drive(100 * direction, 50 * direction);
+              drive(speed * direction, speed/2 * direction);
             else if(gps_heading > angle + 1)
-              drive(100 * direction, 80 * direction);
+              drive(speed * direction, speed*4/5 * direction);
             else
-            drive(100 * direction, 100 * direction);
+            drive(speed * direction, speed * direction);
         }
     }
     drive(0, 0);   
@@ -221,7 +227,7 @@ void HeadingToX(int x, int angle, int direction)
 {
     int initial;
     //printf("Heading to X=%d", x);
-    drive(100, 100);
+    drive(speed, speed);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(!gps_get_data());
@@ -231,15 +237,15 @@ void HeadingToX(int x, int angle, int direction)
           {
             while(!gps_get_data());
             if(gps_heading < angle - 2)
-              drive(50 * direction, 100 * direction);
+              drive(speed/2 * direction, speed * direction);
             else if(gps_heading < angle - 1)
-              drive(80 * direction, 100 * direction);
+              drive(speed*4/5 * direction, speed * direction);
             else if(gps_heading > angle + 2)
-              drive(100 * direction, 50 * direction);
+              drive(speed * direction, (int)speed/2 * direction);
             else if(gps_heading > angle + 1)
-              drive(100 * direction, 80 * direction);
+              drive(speed * direction, speed*4/5 * direction);
             else
-            drive(100 * direction, 100 * direction);
+            drive(speed * direction, speed * direction);
             
         }
     } else {
@@ -247,15 +253,15 @@ void HeadingToX(int x, int angle, int direction)
           {
             while(!gps_get_data());
             if(gps_heading < angle - 2)
-              drive(50 * direction, 100 * direction);
+              drive(speed/2 * direction, speed * direction);
             else if(gps_heading < angle - 1)
-              drive(80 * direction, 100 * direction);
+              drive(speed*4/5 * direction, speed * direction);
             else if(gps_heading > angle + 2)
-              drive(100 * direction, 50 * direction);
+              drive(speed * direction, speed/2 * direction);
             else if(gps_heading > angle + 1)
-              drive(100 * direction, 80 * direction);
+              drive(speed * direction, speed*4/5 * direction);
             else
-            drive(100 * direction, 100 * direction);
+            drive(speed * direction, speed * direction);
         }
     }
     drive(0, 0);   
@@ -264,43 +270,43 @@ void HeadingToX(int x, int angle, int direction)
 
 void FollowHeading(int distance, int direction, int angle)
 {
-    drive(100 * direction, 100 * direction);
+    drive(speed * direction, speed * direction);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(getEncoder(leftEncoder) < distance  && getEncoder(rightEncoder) < distance)
       {
         while(!gps_get_data());
         if(gps_heading < angle - 2)
-          drive(50 * direction, 100 * direction);
+          drive(speed/2 * direction, speed * direction);
         else if(gps_heading < angle - 1)
-          drive(80 * direction, 100 * direction);
+          drive(speed*4/5 * direction, speed * direction);
         else if(gps_heading > angle + 2)
-          drive(100 * direction, 50 * direction);
+          drive(speed * direction, speed/2 * direction);
         else if(gps_heading > angle + 1)
-          drive(100 * direction, 80 * direction);
+          drive(speed * direction, speed*4/5 * direction);
         else
-        drive(100 * direction, 100 * direction);
+        drive(speed * direction, speed * direction);
     }
     drive(0, 0);
 }
 void HeadingToLine(int floorValue, int angle, int direction)
 {
-    drive(100 * direction, 100 * direction);
+    drive(speed * direction, speed * direction);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while((analog(centerLinePort) < floorValue + LINE_THRESHOLD))
       {
         while(!gps_get_data());
         if(gps_heading < angle - 2)
-          drive(50 * direction, 100 * direction);
+          drive(speed/2 * direction, speed * direction);
         else if(gps_heading < angle - 1)
-          drive(80 * direction, 100 * direction);
+          drive(speed*4/5 * direction, speed * direction);
         else if(gps_heading > angle + 2)
-          drive(100 * direction, 50 * direction);
+          drive(speed * direction, speed/2 * direction);
         else if(gps_heading > angle + 1)
-          drive(100 * direction, 80 * direction);
+          drive(speed * direction, speed*4/5 * direction);
         else
-        drive(100 * direction, 100 * direction);
+        drive(speed * direction, speed * direction);
     }
     drive(0, 0);
 }
@@ -313,14 +319,14 @@ void TurnToHeading(int angle)
     initial = gps_heading;
     //printf("Got data, initial = %d\n", initial);
     if (initial < angle) {
-        drive(-100, 100);
+        drive(-speed, speed);
         while (gps_heading < angle)
           {
             while (!gps_get_data());
             //printf("heading=%d\n",gps_heading);
         }
     } else if (initial > angle) {
-        drive(100, -100);
+        drive(speed, -speed);
         while (gps_heading > angle)
           {
             while (!gps_get_data());

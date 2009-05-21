@@ -6,23 +6,27 @@
 
 void WaitForStartLight(int startLightValue)
 {
-    while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD && !stop_button());
+    while(analog(startLightPort) > startLightValue - START_LIGHT_THRESHOLD && !start_button());
 }
 
 void DropOffDynamite()
 {
     // Drive down the ramp
     // Originally 27.5
-    driveStraight(ticks(26.5), FORWARD);
+    speed = 90;
+    //driveStraight(ticks(26.5), FORWARD);
+    driveStraight(ticks(10.0), FORWARD);
+    driveStraightToY(115);
     // Turn toward dynamite dropbox
-    GPSTurn(16, LEFT);
+    GPSTurn(17, LEFT);
+    GPSTurnTo(43);
     FollowHeading(ticks(10.0), FORWARD, 43);    
     // Drive toward dropbox
-    driveStraightToY(175);
+    driveStraightToY(176);
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
-    driveStraight(ticks(1.0), BACKWARD);
+    driveStraight(ticks(0.5), BACKWARD);
     implement(IMPLEMENT_UP);
     msleep(1000L);
 }
@@ -30,14 +34,16 @@ void GotoPlunger()
 {
     int left, right, center;
     left = analog(leftLinePort);
-    center = analog(centerLinePort);
+    center = centerLine;
     right = analog(rightLinePort);
     // Back up a little
+    //speed = 100;
     driveStraight(ticks(12.0), BACKWARD);
     GPSTurn(20, LEFT);
     GPSTurnTo(90);
     driveStraight(ticks(14.0), FORWARD);
-    GPSTurn(40, RIGHT); // turn to 41
+    GPSTurn(32, RIGHT); // turn to 41
+    GPSTurnTo(41);
     driveStraight(ticks(8.0), FORWARD);
     driveStraightWaitForLine(center);
     driveStraight(ticks(1.4), FORWARD);
@@ -48,12 +54,14 @@ void GotoPlunger()
 void HitPlunger(int left, int center, int right)
 {
     int count = 0;
+    printf("HitPlunger()\n");
     implement(IMPLEMENT_UP);
     HeadingToY(190, 138, FORWARD);
     implement(IMPLEMENT_DOWN);
     msleep(500L);
     implement(IMPLEMENT_UP);
-    while (!gps_debris) {
+    msleep(2000L);
+    /*while (!gps_debris) {
         if (count%2 == 0) driveStraight(ticks(1.0), FORWARD);
         if (count%2 == 1) driveStraight(ticks(1.0), BACKWARD);
         msleep(1500L);
@@ -62,14 +70,18 @@ void HitPlunger(int left, int center, int right)
         implement(IMPLEMENT_UP);
         count++;
         while(!gps_get_data());
-    }
+    }*/
     
 }
 void UpRamp()
 {
+    printf("UpRamp()\n");
+    speed = 100;
     driveStraight(ticks(5.0), BACKWARD);
     GPSTurn(160, RIGHT);
-    TurnToHeading(156);
+    driveStraight(ticks(.4), BACKWARD);
+    //TurnToHeading(158);
+    GPSTurnTo(138);
     driveStraight(ticks(4.0), FORWARD);
     FollowHeading(ticks(10.0), FORWARD, 138);
     implement(IMPLEMENT_GEM);
@@ -81,18 +93,22 @@ void GetGem()
 {
     implement(IMPLEMENT_UP);
     msleep(400L);
-    driveStraightP(ticks(0.35), BACKWARD, 40);
+    driveT(40, 40, 250L);
+    driveT(-40, -40, 50L);
+    //driveStraightP(ticks(0.35), BACKWARD, 40);
+    driveT(40, 40, 250L);
     msleep(1000L);
+    speed = 80;
 }
 
 int GetGemColor()
 {
     drive(70, 70);
-    if(GemColorHelper(400L) == RED)
+    if(GemColorHelper(250L) == RED)
       return RED;
-    drive(-70, -70);
-    msleep(50L);
-    drive(0, 0);
+    drive(-60, -60);
+    if(GemColorHelper(30L) == RED)
+      return RED;
     drive(100, -100);
     if(GemColorHelper(300L) == RED)
       return RED;
@@ -121,6 +137,7 @@ int GemColorHelper(long time)
 
 void ToBoxes()
 {
+    
     FollowHeading(ticks(16.7), BACKWARD, 138);
     GPSTurn(59, RIGHT);
     HeadingToX(-55, 47, FORWARD);
@@ -132,20 +149,22 @@ void ToBoxes()
 
 void NextBox(int firstBox)
 {
+    printf("NextBox(%d)\n", firstBox);
     if(firstBox)
       {
         FollowHeading(ticks(1.4), 2, FORWARD);
-        HeadingToLine(analog(centerLinePort), 2, FORWARD);
+        speed = 60;
+        HeadingToLine(centerLine, 2, FORWARD);
+        speed = 80;
     }                
     else
       {  
-        FollowHeading(ticks(1.4), 4, FORWARD);
-        HeadingToLine(analog(centerLinePort), 4, FORWARD);
+        
+        FollowHeading(ticks(1.4), 4, FORWARD);speed = 60;
+        HeadingToLine(centerLine, 4, FORWARD);speed = 80;
     }    
-    driveStraight(ticks(0.7), FORWARD);
-    drive(-100, 100);
-    msleep(300L);
-    drive(0, 0);
+    driveStraight(ticks(0.5), FORWARD);
+    driveT(-100, 100, 300L);
     GPSTurnTo(90);
     HeadingToX(-30, 90, FORWARD);
 }
@@ -175,20 +194,26 @@ void ToWall(int checkedTwice)
 
 void RaiseWall()
 {
-    driveStraightP(ticks(0.4), BACKWARD, 40);
-    implement(IMPLEMENT_UP);
+    printf("RaiseWall()\n");
+    driveStraightP(ticks(0.1), BACKWARD, 20);
+    implement(IMPLEMENT_WALL);
     msleep(250L);
-    driveStraightP(ticks(5.0), FORWARD, 60);
+    driveStraightP(ticks(4.0), FORWARD, 60);
+    driveT(60, 60, 1000L);
 }
 
 void BackToBase()
 {
+    printf("BackToBase()\n");
+    speed = 90;
+    implement(IMPLEMENT_UP);
     driveStraight(ticks(2.0), BACKWARD);
+    implement(IMPLEMENT_UP);
     HeadingToY(122, 6, BACKWARD);
     drive(-100, 100);
     msleep(500L);
     GPSTurnTo(90);
-    HeadingToX(20, 90, FORWARD);
+    HeadingToX(22, 90, FORWARD);
     GPSTurn(68, RIGHT);
     HeadingToY(45, 8, FORWARD);
     FollowHeading(ticks(4.0), FORWARD, 4);
@@ -209,13 +234,17 @@ void BoxWall(int gemColor)
         HeadingToX(-39, 90, BACKWARD);
         GPSTurn(40, RIGHT);
         GPSTurnTo(4);
-        driveStraight(ticks(2.0), BACKWARD);
-        HeadingToLine(analog(centerLinePort), 10, FORWARD);
+        driveStraight(ticks(4.0), BACKWARD); 
+        //driveStraight(ticks(2.0), FORWARD); 
+        speed = 60;
+        HeadingToLine(centerLine, 10, FORWARD);
         NextBox(checkedTwice);
     }
+    speed = 80;
     printf("DropOffGem()\n");
     DropOffGem();
     printf("ToWall()\n");
+    speed = 80;
     ToWall(checkedTwice);
     printf("RaiseWall()\n");
     RaiseWall();   
