@@ -71,7 +71,6 @@ int main()
     if(knobValue <= 3) // Box/wall
       {
         
-        GPSTurnTo(138);
         BoxWall(gemColor);
         
     }
