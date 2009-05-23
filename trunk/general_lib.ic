@@ -13,7 +13,7 @@ void DropOffDynamite()
 {
     // Drive down the ramp
     // Originally 27.5
-    speed = 100;
+    speed = 90;
     //driveStraight(ticks(26.5), FORWARD);
     driveStraight(ticks(10.0), FORWARD);
     driveStraightToY(115);
@@ -26,7 +26,7 @@ void DropOffDynamite()
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
-    driveStraight(ticks(0.5), BACKWARD);
+    driveStraight(ticks(0.8), BACKWARD);
     implement(IMPLEMENT_UP);
     msleep(1000L);
 }
@@ -54,6 +54,7 @@ void GotoPlunger()
 void HitPlunger(int left, int center, int right)
 {
     int count = 0;
+    speed = 80;
     printf("HitPlunger()\n");
     implement(IMPLEMENT_UP);
     HeadingToY(190, 138, FORWARD);
@@ -101,24 +102,23 @@ void GetGem()
     driveT(-40, -40, 50L);
     //driveStraightP(ticks(0.35), BACKWARD, 40);
     driveT(40, 40, 250L);
-    msleep(1000L);
+    if(GemColorHelper(1000L) == RED)
+      gemColor = RED;
+    if (gemColor == BLUE)
+      {
+        driveT(-40, -40, 250L);
+        implement(IMPLEMENT_UP);
+        driveT(60, 60, 250L);
+        gemColor = GetGemColor();
+    }
     speed = 80;
 }
 
 int GetGemColor()
 {
     drive(70, 70);
-    if(GemColorHelper(250L) == RED)
-      return RED;
-    drive(-60, -60);
-    if(GemColorHelper(30L) == RED)
-      return RED;
-    drive(100, -100);
-    if(GemColorHelper(300L) == RED)
-      return RED;
-    drive(-100, 100);
-    if(GemColorHelper(600L) == RED)
-      return RED;
+    if(GemColorHelper(750L) == RED)
+        return RED;
     printf("BLUE GEM\n");
     return BLUE;
 }
@@ -128,7 +128,7 @@ int GemColorHelper(long time)
     long startTime = mseconds();
     while(mseconds() - startTime < time)
       {
-        if(analog(startLightPort) < RED_THRESHOLD)
+        if((analog(startLightPort) < RED_THRESHOLD) || (analog(CDS_LEFT) < RED_THRESHOLD) || (analog(CDS_RIGHT) < RED_THRESHOLD))
           {
             printf("RED GEM\n");
             drive(0, 0);
@@ -145,10 +145,9 @@ void ToBoxes()
     FollowHeading(ticks(16.7), BACKWARD, 138);
     GPSTurn(59, RIGHT);
     HeadingToX(-55, 47, FORWARD);
-    drive(100, -100);
-    msleep(200L);
+    driveT(100, -100, 300L);
     GPSTurnTo(2);
-    FollowHeading(ticks(3.0), FORWARD, 2);
+    FollowHeading(ticks(6.0), FORWARD, 2);
 }
 
 void NextBox(int firstBox)
@@ -164,7 +163,7 @@ void NextBox(int firstBox)
     else // does for first box
       {  
         
-        FollowHeading(ticks(1.4), 4, FORWARD);speed = 60;
+        FollowHeading(ticks(4.0), 4, FORWARD);speed = 60;
         HeadingToLine(centerLine, 4, FORWARD);speed = 80;
     }    
     driveStraight(ticks(0.5), FORWARD);
@@ -190,11 +189,12 @@ void ToWall(int checkedTwice)
     GPSTurnTo(6);
     if (checkedTwice)
       FollowHeading(ticks(1.0), BACKWARD, 6);
+    GPSTurnTo(2);
     implement(IMPLEMENT_DOWN);
-    msleep(500L);
+    msleep(750L);
     if (checkedTwice) FollowHeading(ticks(1.0), FORWARD, 6);
-    FollowHeading(ticks(5.4), FORWARD, 6);
-    driveT(100, 100, 400L);
+    FollowHeading(ticks(3.0), FORWARD, 6);
+    driveT(100, 100, 1500L);
 }
 
 void RaiseWall()
@@ -203,8 +203,8 @@ void RaiseWall()
     driveStraightP(ticks(0.1), BACKWARD, 20);
     implement(IMPLEMENT_WALL);
     msleep(250L);
-    driveStraightP(ticks(4.0), FORWARD, 60);
-    driveT(60, 60, 1000L);
+    driveStraightP(ticks(2.0), FORWARD, 60);
+    driveT(60, 60, 2000L);
 }
 
 void BackToBase()
@@ -215,12 +215,13 @@ void BackToBase()
     driveStraight(ticks(2.0), BACKWARD);
     implement(IMPLEMENT_UP);
     HeadingToY(122, 6, BACKWARD);
-    //driveT(-100, 100, 500L);
-    GPSTurn(70, LEFT);
+    driveT(-100, 100, 1000L);
+    //GPSTurn(70, LEFT);
     GPSTurnTo(90);
     HeadingToX(23, 90, FORWARD);
     GPSTurn(68, RIGHT);
-    HeadingToY(45, 7, FORWARD);
+    GPSTurnTo(6);
+    HeadingToY(45, 6, FORWARD);
     FollowHeading(ticks(4.0), FORWARD, 4);
 }
 void BoxWall(int gemColor)
@@ -240,7 +241,7 @@ void BoxWall(int gemColor)
         GPSTurn(40, RIGHT);
         GPSTurnTo(4);
         //driveStraight(ticks(4.0), BACKWARD); 
-        driveStraight(ticks(6.5), FORWARD); 
+        driveStraight(ticks(5.2), FORWARD); 
         //speed = 60;
         //HeadingToLine(centerLine, 10, FORWARD);
         NextBox(checkedTwice); // NextBox(1);
