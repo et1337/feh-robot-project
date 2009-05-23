@@ -19,14 +19,14 @@ void DropOffDynamite()
     driveStraightToY(115);
     // Turn toward dynamite dropbox
     GPSTurn(17, LEFT);
-    GPSTurnTo(43);
-    FollowHeading(ticks(10.0), FORWARD, 43);    
+    GPSTurnTo(41);
+    FollowHeading(ticks(10.0), FORWARD, 41);    
     // Drive toward dropbox
-    driveStraightToY(176);
+    driveStraightToY(177);
     // Drop dynamite
     implement(IMPLEMENT_DOWN);
     msleep(1000L);
-    driveStraight(ticks(0.8), BACKWARD);
+    driveStraight(ticks(0.5), BACKWARD);
     implement(IMPLEMENT_UP);
     msleep(1000L);
 }
@@ -62,6 +62,7 @@ void HitPlunger(int left, int center, int right)
     msleep(500L);
     implement(IMPLEMENT_UP);
     msleep(1000L);
+    driveStraight(ticks(1.0), BACKWARD);
     implement(IMPLEMENT_DOWN);
     msleep(500L);
     implement(IMPLEMENT_UP);
@@ -163,7 +164,7 @@ void NextBox(int firstBox)
     else // does for first box
       {  
         
-        FollowHeading(ticks(4.0), 4, FORWARD);speed = 60;
+        FollowHeading(ticks(7.0), 4, FORWARD);speed = 60;
         HeadingToLine(centerLine, 4, FORWARD);speed = 80;
     }    
     driveStraight(ticks(0.5), FORWARD);
@@ -190,11 +191,15 @@ void ToWall(int checkedTwice)
     if (checkedTwice)
       FollowHeading(ticks(1.0), BACKWARD, 6);
     GPSTurnTo(2);
+    driveT(100, -100, 50L);
     implement(IMPLEMENT_DOWN);
     msleep(750L);
-    if (checkedTwice) FollowHeading(ticks(1.0), FORWARD, 6);
-    FollowHeading(ticks(3.0), FORWARD, 6);
-    driveT(100, 100, 1500L);
+    //if (checkedTwice) FollowHeading(ticks(1.0), FORWARD, 6);
+    //FollowHeading(ticks(3.0), FORWARD, 6);
+    if (checkedTwice)
+      driveT(100, 100, 2000L);
+    else
+      driveT(100, 100, 3000L);
 }
 
 void RaiseWall()
@@ -203,7 +208,7 @@ void RaiseWall()
     driveStraightP(ticks(0.1), BACKWARD, 20);
     implement(IMPLEMENT_WALL);
     msleep(250L);
-    driveStraightP(ticks(2.0), FORWARD, 60);
+    driveStraightP(ticks(1.0), FORWARD, 60);
     driveT(60, 60, 2000L);
 }
 
@@ -218,10 +223,10 @@ void BackToBase()
     driveT(-100, 100, 1000L);
     //GPSTurn(70, LEFT);
     GPSTurnTo(90);
-    HeadingToX(23, 90, FORWARD);
+    HeadingToX(25, 90, FORWARD);
     GPSTurn(68, RIGHT);
-    GPSTurnTo(6);
-    HeadingToY(45, 6, FORWARD);
+    GPSTurnTo(8);
+    HeadingToY(45, 7, FORWARD);
     FollowHeading(ticks(4.0), FORWARD, 4);
 }
 void BoxWall(int gemColor)
