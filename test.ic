@@ -12,7 +12,7 @@ int main()
     int centerLineFloorValue;
     int rightLineFloorValue;
     int knobValue;
-    int gemColor = BLUE;
+    //int gemColor = BLUE;
     
     
     initServo(implementServo);
@@ -67,11 +67,10 @@ int main()
     } if (knobValue <= 2) {// get gem
         UpRamp();
         GetGem();
-        //gemColor = GetGemColor();
     }
     if(knobValue <= 3) // Box/wall
       {
-        gemColor = GetGemColor();
+        
         GPSTurnTo(138);
         BoxWall(gemColor);
         
@@ -119,7 +118,7 @@ int main()
       {
         while(!stop_button())
           {
-            printf("%d:%d %d:%d %d:%d %d:%d\n", startLightPort, analog(startLightPort), centerLinePort, analog(centerLinePort), leftEncoder, analog(leftEncoder), rightEncoder, analog(rightEncoder));
+            printf("%d:%d %d:%d %d:%d %d:%d %d:%d %d:%d\n", CDS_LEFT, analog(CDS_LEFT), startLightPort, analog(startLightPort), CDS_RIGHT, analog(CDS_RIGHT), centerLinePort, analog(centerLinePort), leftEncoder, analog(leftEncoder), rightEncoder, analog(rightEncoder));
             msleep(100L);
         }
     }
