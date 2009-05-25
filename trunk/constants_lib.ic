@@ -9,10 +9,9 @@
 #define leftEncoder 2
 #define rightEncoder 3
 #define startLightPort 4
-#define leftLinePort 16
+#define CDS_LEFT 22
+#define CDS_RIGHT 24
 #define centerLinePort 18
-#define rightLinePort 20
-#define colorPort 22
 
 // Digital sensors
 #define frontLeftSwitch 8
@@ -20,10 +19,8 @@
 
 // Sensor constants
 #define START_LIGHT_THRESHOLD 10
-#define CDS_LEFT 22
-#define CDS_RIGHT 24
-#define LINE_THRESHOLD 8
-#define RED_THRESHOLD 12
+#define LINE_THRESHOLD 7
+#define RED_THRESHOLD 9
 #define RED 1
 #define BLUE 2
 
@@ -44,7 +41,7 @@
 #define IMPLEMENT_WALL 50
 #define IMPLEMENT_PLUNGER 130
 #define IMPLEMENT_DOWN 180
-#define IMPLEMENT_GEM 176
+#define IMPLEMENT_GEM 171
 
 int speed = 100;
 int gemColor = BLUE;

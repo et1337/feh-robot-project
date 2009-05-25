@@ -95,7 +95,7 @@ void GPSTurnTo(int angle)
             msleep(25L);
             drive(0, 0);
         }
-        msleep(100L);
+        msleep(80L);
         while(!gps_get_data());
     }
 }
@@ -148,10 +148,10 @@ void driveStraightWaitForLine(int floorValue)
     }
     drive(0, 0);
 }
-void driveStraightToY(int y)
+void driveStraightToY(int y, int dir)
 {
     int initial;
-    drive(speed, speed);
+    drive(dir*speed, dir*speed);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(!gps_get_data());
@@ -161,22 +161,22 @@ void driveStraightToY(int y)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-              drive(speed, speed/2);
+              drive(dir*speed, dir*speed/2);
             else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-              drive(speed/2, speed);
+              drive(dir*speed/2, dir*speed);
             else
-            drive(speed, speed);
+            drive(dir*speed, dir*speed);
         }
     } else {
         while(gps_y > y)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
-              drive(speed, speed/2);
+              drive(dir*speed, dir*speed/2);
             else if(getEncoder(rightEncoder) < getEncoder(leftEncoder) - 1)
-              drive(speed/2, speed);
+              drive(dir*speed/2, dir*speed);
             else
-            drive(speed, speed);
+            drive(dir*speed, dir*speed);
         }
     }
     drive(0, 0);   

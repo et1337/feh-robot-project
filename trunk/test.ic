@@ -8,9 +8,7 @@
 int main()
 {
     int startLightValue = 0;
-    int leftLineFloorValue;
     int centerLineFloorValue;
-    int rightLineFloorValue;
     int knobValue;
     //int gemColor = BLUE;
     
@@ -21,9 +19,7 @@ int main()
     implement(IMPLEMENT_UP);
     
     startLightValue = analog(startLightPort);
-    leftLineFloorValue = analog(leftLinePort);
     centerLineFloorValue = analog(centerLinePort);
-    rightLineFloorValue = analog(rightLinePort);
     
     initGPS();
     
@@ -51,9 +47,7 @@ int main()
     if (knobValue == 0) // Everything
       {
         printf("Waiting on light\n");
-        leftLineFloorValue = analog(leftLinePort);
         centerLineFloorValue = analog(centerLinePort);
-        rightLineFloorValue = analog(rightLinePort);
         startLightValue = analog(startLightPort);
         centerLine = centerLineFloorValue;
         WaitForStartLight(startLightValue);
@@ -62,7 +56,7 @@ int main()
         DropOffDynamite();
     } if (knobValue <= 1)  {// Press plunger
         GotoPlunger();
-        HitPlunger(leftLineFloorValue, centerLineFloorValue, rightLineFloorValue);
+        HitPlunger(centerLineFloorValue);
         sleep(0.5);  // wait for ramp
     } if (knobValue <= 2) {// get gem
         UpRamp();
@@ -118,11 +112,10 @@ int main()
         while(!stop_button())
           {
             printf("%d:%d %d:%d %d:%d %d:%d %d:%d %d:%d\n", CDS_LEFT, analog(CDS_LEFT), startLightPort, analog(startLightPort), CDS_RIGHT, analog(CDS_RIGHT), centerLinePort, analog(centerLinePort), leftEncoder, analog(leftEncoder), rightEncoder, analog(rightEncoder));
+            //printf("%d:%d %d:%d %d:%d", centerLinePort, analog(centerLinePort), leftEncoder, analog(leftEncoder), rightEncoder, analog(rightEncoder));
             msleep(100L);
         }
     }
-    
-    sleep(3.0); // Let servos finish moving before disabling
     
     disableServo();
     
