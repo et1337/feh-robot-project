@@ -1,3 +1,4 @@
+
 #include "constants_lib.ic"
 #include "encoder_lib.ic"
 #include "movement_lib.ic"
@@ -146,8 +147,9 @@ void NextBox(int secondBox)
     printf("NextBox(%d)\n", secondBox);
     if(!secondBox) {
         FollowHeading(ticks(7.0), 4, FORWARD);speed = 70;
-        centerLine = analog(centerLinePort);
-        HeadingToLine(centerLine, 4, FORWARD);speed = 100;
+        //centerLine = analog(centerLinePort);
+        //HeadingToLine(centerLine, 4, FORWARD);speed = 100;
+        HeadingToY(98, 4, FORWARD);
     }
     driveStraight(ticks(0.5), FORWARD);
     driveT(-100, 100, 700L);
@@ -175,9 +177,9 @@ void ToWall(int checkedTwice)
     driveT(100, -100, 50L);
     implement(IMPLEMENT_DOWN);
     msleep(500L);
-    driveStraightToY(68, FORWARD);
+    driveStraightToY(66, FORWARD);
     //driveStraight(ticks(0.2), FORWARD);
-    driveT(80,80, 250L);
+    //driveT(80,80, 250L);
 }
 
 void RaiseWall()
@@ -221,7 +223,7 @@ void BoxWall(int gemColor)
     box1Color = GetGemColor();
     GPSTurnTo(92);
     if(box1Color != gemColor)
-    {
+      {
         checkedTwice = 1;
         HeadingToX(-39, 92, BACKWARD);
         GPSTurn(40, RIGHT);
