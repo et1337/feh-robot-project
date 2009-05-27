@@ -151,13 +151,14 @@ void driveStraightWaitForLine(int floorValue)
 void driveStraightToY(int y, int dir)
 {
     int initial;
+    long startTime = mseconds();
     drive(dir*speed, dir*speed);
     setEncoder(leftEncoder, 0);
     setEncoder(rightEncoder, 0);
     while(!gps_get_data());
     initial = gps_y;
     if (initial < y) {
-        while(gps_y < y)
+        while(gps_y < y && mseconds() - startTime < 5000L)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)
@@ -168,7 +169,7 @@ void driveStraightToY(int y, int dir)
             drive(dir*speed, dir*speed);
         }
     } else {
-        while(gps_y > y)
+        while(gps_y > y && mseconds() - startTime < 5000L)
           {
             while(!gps_get_data());
             if(getEncoder(leftEncoder) < getEncoder(rightEncoder) - 1)

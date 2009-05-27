@@ -148,8 +148,9 @@ void NextBox(int secondBox)
     if(!secondBox) {
         FollowHeading(ticks(7.0), 4, FORWARD);speed = 70;
         //centerLine = analog(centerLinePort);
-        //HeadingToLine(centerLine, 4, FORWARD);speed = 100;
-        HeadingToY(98, 4, FORWARD);
+        //HeadingToLine(centerLine, 4, FORWARD);
+        HeadingToY(99, 4, FORWARD);
+        speed = 100;
     }
     driveStraight(ticks(0.5), FORWARD);
     driveT(-100, 100, 700L);
@@ -168,7 +169,7 @@ void DropOffGem()
 
 void ToWall(int checkedTwice)
 {
-    driveStraight(ticks(2.5), BACKWARD);
+    driveStraight(ticks(2.0), BACKWARD);
     GPSTurn(50, RIGHT);
     GPSTurnTo(6);
     if (checkedTwice)
