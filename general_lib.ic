@@ -13,7 +13,7 @@ void WaitForStartLight(int startLightValue)
 void DropOffDynamite()
 {
     // Drive down the ramp
-    speed = 100;
+    speed = 80;
     driveStraight(ticks(10.0), FORWARD);
     driveStraightToY(115, FORWARD);
     // Turn toward dynamite dropbox
@@ -51,7 +51,7 @@ void GotoPlunger()
 void HitPlunger(int center)
 {
     int count = 0;
-    speed = 100;
+    speed = 90;
     printf("HitPlunger()\n");
     implement(IMPLEMENT_UP);
     HeadingToY(190, 138, FORWARD);
@@ -137,7 +137,7 @@ void ToBoxes()
     FollowHeading(ticks(16.7), BACKWARD, 138);
     GPSTurn(59, RIGHT);
     HeadingToX(-55, 47, FORWARD);
-    driveT(100, -100, 400L);
+    driveT(100, -100, 200L);
     GPSTurnTo(2);
     FollowHeading(ticks(6.0), FORWARD, 2);
 }
@@ -146,11 +146,11 @@ void NextBox(int secondBox)
 {
     printf("NextBox(%d)\n", secondBox);
     if(!secondBox) {
-        FollowHeading(ticks(7.0), 4, FORWARD);speed = 70;
-        //centerLine = analog(centerLinePort);
-        //HeadingToLine(centerLine, 4, FORWARD);
-        HeadingToY(99, 4, FORWARD);
-        speed = 100;
+        FollowHeading(ticks(7.0), 4, FORWARD);speed = 60;
+        centerLine = analog(centerLinePort);
+        HeadingToLine(centerLine, 4, FORWARD);
+        //HeadingToY(99, 4, FORWARD);
+        speed = 80;
     }
     driveStraight(ticks(0.5), FORWARD);
     driveT(-100, 100, 700L);
@@ -198,7 +198,7 @@ void RaiseWall()
 void BackToBase()
 {
     printf("BackToBase()\n");
-    speed = 100;
+    speed = 90;
     implement(IMPLEMENT_UP);
     driveStraight(ticks(2.0), BACKWARD);
     implement(IMPLEMENT_UP);
@@ -209,7 +209,7 @@ void BackToBase()
     GPSTurn(60, RIGHT);
     speed = 80;
     GPSTurnTo(8);
-    speed = 100;
+    speed = 90;
     HeadingToY(45, 7, FORWARD);
     FollowHeading(ticks(4.0), FORWARD, 4);
 }
@@ -232,11 +232,11 @@ void BoxWall(int gemColor)
         driveStraight(ticks(5.2), FORWARD); 
         NextBox(checkedTwice);
     }
-    speed = 100;
+    speed = 90;
     printf("DropOffGem()\n");
     DropOffGem();
     printf("ToWall()\n");
-    speed = 100;
+    speed = 90;
     ToWall(checkedTwice);
     printf("RaiseWall()\n");
     RaiseWall();   
