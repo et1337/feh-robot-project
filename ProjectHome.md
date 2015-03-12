@@ -1,0 +1,1 @@
+This project contains source code for the Ohio State University FEH H193 robot competition. More information at http://feh.osu.edu/Design-Project/Design-project.htm
